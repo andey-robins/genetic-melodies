@@ -1,0 +1,7 @@
+#BlueJ class context
+comment0.target=MidiPlayer
+comment1.params=filename
+comment1.target=void\ playMidiFile(java.lang.String)
+comment2.params=args
+comment2.target=void\ main(java.lang.String[])
+numComments=3
