@@ -1,10 +1,10 @@
-module com.github.andeyrobins {
+module geneticMelodies {
     requires java.desktop;
     requires javafx.controls;
     requires javafx.fxml;
 
-    opens com.github.andeyrobins to javafx.fxml;
+    opens app to javafx.fxml;
 
-    exports com.github.andeyrobins;
-    exports com.github.ahmedmansour3548;
+    exports app;
+    exports midi;
 }

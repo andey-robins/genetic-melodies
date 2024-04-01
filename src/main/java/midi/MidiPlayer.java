@@ -1,10 +1,15 @@
-package com.github.ahmedmansour3548;
+package midi;
 
 import javax.sound.midi.*;
 import java.io.*;
 
 public class MidiPlayer {
 
+
+    /*
+     * playMidiFile will do what it says on the tin
+     * @param filename - the filename of the midi file to be played
+     */
     public static void playMidiFile(String filename) {
         try {
             Sequence sequence = MidiSystem.getSequence(new File(filename));
@@ -24,10 +29,5 @@ public class MidiPlayer {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    public static void main(String[] args) {
-        String midiFilePath = "MyMidiRecording.mid";
-        playMidiFile(midiFilePath);
     }
 }

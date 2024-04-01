@@ -1,19 +1,17 @@
-package com.github.ahmedmansour3548;
+package midi;
 
 import javax.sound.midi.*;
 import java.io.*;
 
 public class MidiRecorder {
 
-    private Sequence sequence;
-    private Track track;
-    private MidiDevice device;
-    private Synthesizer synthesizer;
+    private final Sequence sequence;
+    private final Track track;
+    private final MidiDevice device;
+    private final Synthesizer synthesizer;
     private Receiver livePlaybackReceiver;
-    private boolean isRecording = false;
-
-    private int PPQ = 12;
-    private double TEMPO = 120;
+    private final int PPQ = 12;
+    private final double TEMPO = 120;
     private int currentInstrument = 0; // Default to Piano
 
     public MidiRecorder(MidiDevice.Info selectedDeviceInfo) throws MidiUnavailableException, InvalidMidiDataException {
@@ -34,19 +32,17 @@ public class MidiRecorder {
         transmitter.setReceiver(new Receiver() {
             @Override
             public void send(MidiMessage message, long timeStamp) {
-
                 livePlaybackReceiver.send(message, -1);
-
             }
 
             @Override
-            public void close() {
-            }
+            public void close() {}
         });
     }
 
     public int changeInstrument(int change) {
         currentInstrument += change;
+
         if (currentInstrument < 0)
             currentInstrument = 127;
         else if (currentInstrument > 127)
@@ -68,9 +64,8 @@ public class MidiRecorder {
     }
 
     public void startRecording() throws MidiUnavailableException {
-        isRecording = true;
         device.getTransmitter().setReceiver(new Receiver() {
-            private long startTime = System.currentTimeMillis();
+            private final long startTime = System.currentTimeMillis();
 
             @Override
             public void send(MidiMessage message, long timeStamp) {
@@ -87,7 +82,6 @@ public class MidiRecorder {
     }
 
     public void stopRecording() {
-        isRecording = false;
         System.out.println("Recording stopped.");
     }
 

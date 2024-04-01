@@ -1,10 +1,10 @@
-package com.github.ahmedmansour3548;
+package midi;
 
 import javax.sound.midi.*;
 
 public class MidiUtility {
-    private Sequence sequence;
-    private Sequencer sequencer;
+    private final Sequence sequence;
+    private final Sequencer sequencer;
 
     public MidiUtility() throws MidiUnavailableException, InvalidMidiDataException {
         sequencer = MidiSystem.getSequencer();

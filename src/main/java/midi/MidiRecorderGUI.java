@@ -1,4 +1,4 @@
-package com.github.ahmedmansour3548;
+package midi;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -19,8 +19,9 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.BorderPane;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import java.util.Scanner;
 import javafx.scene.control.ChoiceDialog;
+
+import java.util.Objects;
 import java.util.Optional;
 import javafx.scene.control.Alert;
 
@@ -28,11 +29,8 @@ public class MidiRecorderGUI extends Application {
     private MidiRecorder recorder;
     private Label instrumentLabel;
     private Text statusText;
-    private Synthesizer synthesizer;
     private MidiChannel[] midiChannels;
     private Rectangle[] pianoKeys;
-    private int volume = 80;
-    private static MidiDevice.Info selectedMidiDeviceInfo;
 
     @Override
     public void start(Stage primaryStage) {
@@ -47,9 +45,9 @@ public class MidiRecorderGUI extends Application {
         Optional<MidiDevice.Info> result = dialog.showAndWait();
         if (result.isPresent()) {
             try {
-                selectedMidiDeviceInfo = result.get();
+                MidiDevice.Info selectedMidiDeviceInfo = result.get();
                 recorder = new MidiRecorder(selectedMidiDeviceInfo);
-                synthesizer = MidiSystem.getSynthesizer();
+                Synthesizer synthesizer = MidiSystem.getSynthesizer();
                 synthesizer.open();
                 midiChannels = synthesizer.getChannels();
                 midiChannels[0].programChange(0);
@@ -102,7 +100,7 @@ public class MidiRecorderGUI extends Application {
     private void prepareScene(Scene scene) {
         scene.setOnKeyPressed(this::handleKeyPress);
         scene.setOnKeyReleased(this::handleKeyRelease);
-        scene.getStylesheets().add("style.css");
+        scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/css/style.css")).toExternalForm());
     }
 
     private void showAlert(String header, String content) {
@@ -156,21 +154,18 @@ public class MidiRecorderGUI extends Application {
             new Thread(() -> {
                 midiChannels[0].programChange(recorder.changeInstrument(1));
 
-                Platform.runLater(() -> {
-                    updateInstrumentDisplay();
-                });
+                Platform.runLater(this::updateInstrumentDisplay);
             }).start();
         });
         decrementInstrumentButton.setOnAction(event -> {
             new Thread(() -> {
                 midiChannels[0].programChange(recorder.changeInstrument(-1));
-                Platform.runLater(() -> {
-                    updateInstrumentDisplay();
-                });
+                Platform.runLater(this::updateInstrumentDisplay);
             }).start();
         });
         root.getChildren().addAll(instrumentLabel, startButton, stopButton, incrementInstrumentButton,
                 decrementInstrumentButton, statusText);
+
     }
 
     private void updateInstrumentDisplay() {
@@ -241,6 +236,7 @@ public class MidiRecorderGUI extends Application {
                     if (key != null)
                         key.setFill(Color.GRAY);
                 });
+                int volume = 80;
                 midiChannels[0].noteOn(midiNote, volume);
             }
         }
@@ -263,11 +259,6 @@ public class MidiRecorderGUI extends Application {
     }
 
     private int midiNoteToIndex(int midiNote) {
-        int relativeNote = (midiNote - 60) % 12;
-        return relativeNote;
-    }
-
-    public static void main(String[] args) {
-        launch(args);
+        return (midiNote - 60) % 12;
     }
 }

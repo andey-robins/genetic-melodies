@@ -1,6 +1,4 @@
-package com.github.ahmedmansour3548;
-
-import javax.sound.midi.*;
+package midi;
 
 public class MidiTest {
     public static void main(String[] args) {
@@ -60,7 +58,6 @@ public class MidiTest {
             octave += 1;
         }
 
-        int midiNumber = 12 * (octave + 1) + offset;
-        return midiNumber;
+        return 12 * (octave + 1) + offset;
     }
 }

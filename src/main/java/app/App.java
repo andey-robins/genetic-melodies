@@ -1,4 +1,4 @@
-package com.github.andeyrobins;
+package app;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -9,7 +9,8 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 /**
- * JavaFX App
+ * JavaFX App. This is the overall entrypoint for the application. To be added are all the options
+ * and UI to interface and kick off the execution of the GAs
  */
 public class App extends Application {
 
