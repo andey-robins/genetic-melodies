@@ -1,9 +1,0 @@
-#BlueJ class context
-comment0.target=MidiUtility
-comment1.params=
-comment1.target=MidiUtility()
-comment2.params=channel\ note\ velocity\ startTick\ duration\ instrument
-comment2.target=void\ addNote(int,\ int,\ int,\ int,\ int,\ int)
-comment3.params=
-comment3.target=void\ play()
-numComments=4
