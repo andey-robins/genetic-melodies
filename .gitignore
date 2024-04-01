@@ -1,2 +1,4 @@
 *.class
 *.mid
+
+.DS_Store
