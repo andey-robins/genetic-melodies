@@ -11,4 +11,5 @@
 /Users/andey/genetic-melodies/src/main/java/genetics/interfaces/IMutationMechanism.java
 /Users/andey/genetic-melodies/src/main/java/midi/MidiTest.java
 /Users/andey/genetic-melodies/src/main/java/genetics/Population.java
+/Users/andey/genetic-melodies/src/main/java/genetics/interfaces/ISelectionMechanism.java
 /Users/andey/genetic-melodies/src/main/java/midi/MidiRecorderGUI.java
