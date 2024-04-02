@@ -1,4 +1,5 @@
 *.class
 *.mid
 
+target/
 .DS_Store
