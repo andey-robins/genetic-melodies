@@ -7,6 +7,7 @@ import java.util.ArrayList;
 public class Individual {
 
     ArrayList<Note> melody;
+    private int length;
 
     public static Individual randomIndividualFactory() {
         ArrayList<Note> notes = new ArrayList<>();
@@ -20,6 +21,7 @@ public class Individual {
 
     public Individual(ArrayList<Note> m) {
         this.melody = m;
+        this.length = m.size();
     }
 
     public double getFitness() {
@@ -28,5 +30,13 @@ public class Individual {
 
     public void setFitness(double fitness) {
         this.fitness = fitness;
+    }
+
+    public int size() {
+        return this.length;
+    }
+
+    public ArrayList<Note> getMelody() {
+        return this.melody;
     }
 }
