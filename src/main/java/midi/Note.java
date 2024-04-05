@@ -47,4 +47,25 @@ public class Note {
         EIGHTH,
         SIXTEENTH
     }
+
+    public int getPitch() {
+        switch (this.pitch) {
+            case C_3: return 48;
+            case D_3: return 50;
+            case E_3: return 52;
+            case F_3: return 53;
+            case G_3: return 55;
+            case A_4: return 57;
+            case B_4: return 59;
+            case C_4: return 60;
+            case D_4: return 62;
+            case E_4: return 64;
+            case F_4: return 65;
+            case G_4: return 67;
+            case A_5: return 69;
+            case B_5: return 71;
+            case C_5: return 72;
+            default: return -1;
+        }
+    }
 }

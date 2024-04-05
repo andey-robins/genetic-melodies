@@ -32,18 +32,23 @@ public class MidiUtility {
         track.add(new MidiEvent(stopMessage, startTick + duration));
     }
 
-    public void play() throws InterruptedException {
-        try {
-            sequencer.setSequence(sequence);
-            sequencer.start();
+    public void play() {
+        // Use a separate thread for playback
+        new Thread(() -> {
+            try {
+                sequencer.setSequence(sequence);
+                sequencer.start();
+                
+                while (sequencer.isRunning()) {
+                    Thread.sleep(100); // Check every 100 milliseconds
+                }
 
-            // Length of the song
-            Thread.sleep(10000);
-
-            sequencer.stop();
-            sequencer.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+                // Clean up
+                sequencer.stop();
+                sequencer.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
     }
 }
