@@ -63,13 +63,20 @@ public class Individual {
             int instrument = 0;
             
             for (Note note : melody) {
-                midiUtility.addNote(0, note.getPitch(), velocity, startTick, duration, instrument);
-                startTick += duration; // Move to the next note's start time
+                midiUtility.addNote(0, note.getPitch(), velocity, startTick, note.getLength(), instrument);
+                startTick += note.getLength(); // Move to the next note's start time
             }
+
+            // add a hole note of rest at the end
+            midiUtility.addNote(0, 1, velocity, startTick, 16, instrument);
             
             midiUtility.play();
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void setMelodyNote(int idx, Note n) {
+        this.melody.set(idx, n);
     }
 }

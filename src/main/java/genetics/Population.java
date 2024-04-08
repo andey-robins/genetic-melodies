@@ -10,6 +10,8 @@ import java.util.Random;
 
 public class Population {
 
+    public int generation;
+
     private final Random RNG = new Random();
 
     ISelectionMechanism selector;
@@ -57,19 +59,23 @@ public class Population {
         this.mutationChance = mutChance;
 
         this.individuals = new ArrayList<>();
+
+
+        this.generation = 0;
     }
 
 
     public void Evolve() {
         this.initialize();
-
-        if (!this.stopper.shouldStop(this)) {
-            Pair<Individual, Individual>[] survivors;
+        System.out.println("Beginning evolution");
+        while (!this.stopper.shouldStop(this)) {
+            ArrayList<Pair<Individual, Individual>> survivors;
 
             this.evaluateFitness();
             survivors = this.select();
             this.individuals = this.combine(survivors);
             this.mutate();
+            this.generation++;
         }
     }
 
@@ -93,6 +99,14 @@ public class Population {
         return this.individuals.subList(0, n).toArray(new Individual[n]);
     }
 
+    /**
+     * getRandomIndividual will retrieve a random individual from the population
+     * @return an individual sampled uniformly from the population
+     */
+    public Individual getRandomIndividual() {
+        return this.individuals.get(this.RNG.nextInt(this.individuals.size()));
+    }
+
     private void initialize() {
         for (int i = 0; i < this.size; i++) {
             this.individuals.add(Individual.randomIndividualFactory());
@@ -106,11 +120,11 @@ public class Population {
         }
     }
 
-    private Pair<Individual, Individual>[] select() {
+    private ArrayList<Pair<Individual, Individual>> select() {
         return this.selector.selectTop(this, 20);
     }
 
-    private ArrayList<Individual> combine(Pair<Individual, Individual>[] parents) {
+    private ArrayList<Individual> combine(ArrayList<Pair<Individual, Individual>> parents) {
         ArrayList<Individual> nextIndividuals = new ArrayList<>();
 
         for (Pair<Individual, Individual> couple : parents) {

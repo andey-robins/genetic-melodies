@@ -37,7 +37,8 @@ public class Note {
         G_4,
         A_5,
         B_5,
-        C_5
+        C_5,
+        REST
     }
 
     public enum Rhythm {
@@ -49,23 +50,35 @@ public class Note {
     }
 
     public int getPitch() {
-        switch (this.pitch) {
-            case C_3: return 48;
-            case D_3: return 50;
-            case E_3: return 52;
-            case F_3: return 53;
-            case G_3: return 55;
-            case A_4: return 57;
-            case B_4: return 59;
-            case C_4: return 60;
-            case D_4: return 62;
-            case E_4: return 64;
-            case F_4: return 65;
-            case G_4: return 67;
-            case A_5: return 69;
-            case B_5: return 71;
-            case C_5: return 72;
-            default: return -1;
-        }
+        return switch (this.pitch) {
+            case C_3 -> 48;
+            case D_3 -> 50;
+            case E_3 -> 52;
+            case F_3 -> 53;
+            case G_3 -> 55;
+            case A_4 -> 57;
+            case B_4 -> 59;
+            case C_4 -> 60;
+            case D_4 -> 62;
+            case E_4 -> 64;
+            case F_4 -> 65;
+            case G_4 -> 67;
+            case A_5 -> 69;
+            case B_5 -> 71;
+            case C_5 -> 72;
+            case REST -> 1;
+            default -> -1;
+        };
+    }
+
+    public int getLength() {
+        return switch (this.rhythm) {
+            case WHOLE -> 16;
+            case HALF -> 8;
+            case QUARTER -> 4;
+            case EIGHTH -> 2;
+            case SIXTEENTH -> 1;
+            default -> 0;
+        };
     }
 }

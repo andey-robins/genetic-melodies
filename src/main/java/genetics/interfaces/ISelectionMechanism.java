@@ -4,6 +4,8 @@ import genetics.Individual;
 import genetics.Population;
 import org.javatuples.Pair;
 
+import java.util.ArrayList;
+
 public interface ISelectionMechanism {
 
     /**
@@ -19,5 +21,5 @@ public interface ISelectionMechanism {
      * @param n - the number of pairs to select from the population
      * @return an array of pairs for combination
      */
-    Pair<Individual, Individual>[] selectTop(Population p, int n);
+    ArrayList<Pair<Individual, Individual>> selectTop(Population p, int n);
 }
