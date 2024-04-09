@@ -2,6 +2,7 @@ package app;
 
 import genetics.crossover.UniformCrossover;
 import genetics.fitness.SmoothFitness;
+import genetics.fitness.ConsonanceFitness;
 import genetics.mutation.NotewiseMutation;
 import genetics.selection.TournamentSelection;
 import genetics.stopping.BoundedGenerationStop;
@@ -46,7 +47,7 @@ public class PrimaryController {
                 100,
                 true,
                 0.2,
-                new SmoothFitness(),
+                new ConsonanceFitness(),
                 new TournamentSelection(5),
                 new UniformCrossover(),
                 new NotewiseMutation(),
