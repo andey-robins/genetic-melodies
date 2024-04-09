@@ -71,11 +71,12 @@ public class Population {
         while (!this.stopper.shouldStop(this)) {
             ArrayList<Pair<Individual, Individual>> survivors;
 
-            this.evaluateFitness();
+            
             survivors = this.select();
             this.individuals = this.combine(survivors);
             this.mutate();
             this.generation++;
+            this.evaluateFitness();
         }
     }
 
@@ -95,7 +96,7 @@ public class Population {
      * @return the top n most fit individuals in the population
      */
     public Individual[] getTopPerformers(int n) {
-        individuals.sort(Comparator.comparingDouble(Individual::getFitness));
+        individuals.sort(Comparator.comparingDouble(Individual::getFitness).reversed());
         return this.individuals.subList(0, n).toArray(new Individual[n]);
     }
 

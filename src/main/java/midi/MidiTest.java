@@ -3,7 +3,7 @@ package midi;
 public class MidiTest {
     public static void main(String[] args) {
         try {
-            MidiUtility midiUtility = new MidiUtility();
+            MidiUtility midiUtility = MidiUtility.getInstance();
 
             int[][] notes = {
                     { 1, noteLetterToMidiNumber("F", 3), 127, 0, 1, 120 },

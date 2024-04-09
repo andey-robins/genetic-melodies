@@ -6,6 +6,7 @@ import midi.Note;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Optional;
 
 public class SmoothFitness implements IFitnessFunction {
 
@@ -15,18 +16,22 @@ public class SmoothFitness implements IFitnessFunction {
     public double score(Individual i) {
 
         Note lastNote = null;
-        ArrayList<Double> distances = new ArrayList<Double>();
+        ArrayList<Double> distances = new ArrayList<>();
 
         // approximate the first derivative of the melody by
-        // measuring the distance between notes
+        // measuring the distance between notes, ignoring rests
         for (Note note : i.getMelody()) {
-            if (lastNote == null) {
-                lastNote = note;
-                continue;
+            if (lastNote != null) {
+                Optional<Integer> lastNotePitch = lastNote.getPitch();
+                Optional<Integer> notePitch = note.getPitch();
+                
+                // Only calculate distance if both notes are not rests
+                if (lastNotePitch.isPresent() && notePitch.isPresent()) {
+                    distances.add((double) (lastNotePitch.get() - notePitch.get()));
+                }
             }
-
-            distances.add((double) lastNote.getPitch() - note.getPitch());
-        }
+            lastNote = note;
+        } // Continue as usual
 
         // calculate the variance of the distances array
         double mean = calculateMean(distances);

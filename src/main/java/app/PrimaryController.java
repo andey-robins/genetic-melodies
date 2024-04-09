@@ -6,6 +6,7 @@ import genetics.mutation.NotewiseMutation;
 import genetics.selection.TournamentSelection;
 import genetics.stopping.BoundedGenerationStop;
 import midi.MidiRecorderGUI;
+import midi.MidiUtility;
 import genetics.Individual;
 import genetics.Population;
 import javafx.fxml.FXML;
@@ -13,6 +14,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+
+import javax.sound.midi.InvalidMidiDataException;
+import javax.sound.midi.MidiUnavailableException;
 
 public class PrimaryController {
 
@@ -30,7 +34,7 @@ public class PrimaryController {
     private Button startGAButton;
 
     @FXML
-    private void startGA() {
+    private void startGA() throws MidiUnavailableException, InvalidMidiDataException {
         //int populationCount = Integer.parseInt(populationCountField.getText());
         //int numberOfNotes = Integer.parseInt(numberOfNotesField.getText());
         //int numberOfGenerations = Integer.parseInt(numberOfGenerationsField.getText());
@@ -57,9 +61,15 @@ public class PrimaryController {
         //   3. Provide output to user, ask if they want to continue evolution
         //   4. Go to step 2 if they want to continue otherwise exit
 
-        Individual[] smoothest = pop.getTopPerformers(1);
+        Individual[] smoothest = pop.getTopPerformers(10);
         System.out.println("Evolution complete. Playing smoothest melody.");
         smoothest[0].playMelody();
+
+
+        // Cleanup
+        // Destroy Sequencer
+        // Doesn't work right now, it doesn't wait for the current melody to end. Might not need it tbh
+        //MidiUtility.getInstance().cleanup();
 
     }
 

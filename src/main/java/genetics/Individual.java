@@ -14,6 +14,9 @@ import javax.sound.midi.Sequencer;
 import javax.sound.midi.ShortMessage;
 import javax.sound.midi.Track;
 
+
+import java.util.Optional;
+
 public class Individual {
 
     ArrayList<Note> melody;
@@ -56,20 +59,23 @@ public class Individual {
     public void playMelody() {
         try {
             // TODO: Replace these hardcoded values
-            MidiUtility midiUtility = new MidiUtility();
+            MidiUtility midiUtility = MidiUtility.getInstance();
             int startTick = 0;
-            int duration = 2; // fixed duration (for now... 😈)
+            int duration = 2;
             int velocity = 64;
             int instrument = 0;
             
+            // Ensure sequence is empty
+            midiUtility.resetSequence();
+
             for (Note note : melody) {
-                midiUtility.addNote(0, note.getPitch(), velocity, startTick, note.getLength(), instrument);
-                startTick += note.getLength(); // Move to the next note's start time
+                Optional<Integer> pitch = note.getPitch();
+                if (pitch.isPresent()) {
+                    midiUtility.addNote(0, pitch.get(), velocity, startTick, note.getLength(), instrument);
+                }
+                startTick += note.getLength(); // Advance the start tick regardless of whether a note is played or not
             }
 
-            // add a hole note of rest at the end
-            midiUtility.addNote(0, 1, velocity, startTick, 16, instrument);
-            
             midiUtility.play();
         } catch (Exception e) {
             e.printStackTrace();
