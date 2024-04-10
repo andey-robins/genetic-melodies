@@ -66,7 +66,7 @@ public class Individual {
             int instrument = 0;
             
             // Ensure sequence is empty
-            midiUtility.resetSequence();
+            midiUtility.resetForNewMelody();
 
             for (Note note : melody) {
                 Optional<Integer> pitch = note.getPitch();
@@ -75,7 +75,7 @@ public class Individual {
                 }
                 startTick += note.getLength(); // Advance the start tick regardless of whether a note is played or not
             }
-
+            displayMelody();
             midiUtility.play();
         } catch (Exception e) {
             e.printStackTrace();
@@ -84,5 +84,38 @@ public class Individual {
 
     public void setMelodyNote(int idx, Note n) {
         this.melody.set(idx, n);
+    }
+
+    /**
+     * Displays a visual representation of the melody.
+     */
+    public void displayMelody() {
+        StringBuilder melodyRepresentation = new StringBuilder("Melody: [");
+        for (Note note : this.melody) {
+            melodyRepresentation.append(noteToString(note)).append(", ");
+        }
+        if (!this.melody.isEmpty()) {
+            melodyRepresentation.setLength(melodyRepresentation.length() - 2); // Trim the trailing comma and space
+        }
+        melodyRepresentation.append("]");
+        System.out.println(melodyRepresentation.toString());
+    }
+
+    /**
+     * Converts a note to a string representation.
+     * 
+     * @param note The note to convert.
+     * @return A string representing the note's pitch (or "REST") and its rhythm.
+     */
+    private String noteToString(Note note) {
+        String pitchName = note.getPitch().map(pitch -> {
+            // This map operation converts MIDI pitch numbers back to note names.
+            // Assuming pitch corresponds directly to the Note.Pitch enum ordering.
+            return Note.Pitch.values()[pitch % Note.Pitch.values().length - 1].name();
+        }).orElse("REST");
+        
+        // The rhythm is directly obtainable from the note's rhythm property.
+        String rhythmName = note.getRhythm().name();
+        return pitchName + " (" + rhythmName + ")";
     }
 }

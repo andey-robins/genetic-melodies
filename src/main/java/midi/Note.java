@@ -73,4 +73,8 @@ public class Note {
             default -> 0;
         };
     }
+
+    public Rhythm getRhythm() {
+        return this.rhythm;
+    }
 }

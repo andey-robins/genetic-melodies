@@ -31,8 +31,12 @@ public class SmoothFitness implements IFitnessFunction {
                 }
             }
             lastNote = note;
-        } // Continue as usual
+        } 
 
+        // If no distances could be calculated (Ex. one note melody), return 0
+        if (distances.size() == 0) 
+            return 0;
+        
         // calculate the variance of the distances array
         double mean = calculateMean(distances);
         double sumOfSquaredDifferences = 0.0;

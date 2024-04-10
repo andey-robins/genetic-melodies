@@ -2,22 +2,18 @@ package midi;
 
 import javax.sound.midi.*;
 
-// Singleton Pattern
 public class MidiUtility {
     private static MidiUtility instance;
     private Sequencer sequencer;
     private Sequence sequence;
     private Track track;
 
-    // Private constructor to prevent external instantiation
     private MidiUtility() throws MidiUnavailableException, InvalidMidiDataException {
         this.sequencer = MidiSystem.getSequencer();
         this.sequencer.open();
-        this.sequence = new Sequence(Sequence.PPQ, 4);
-        this.track = sequence.createTrack();
+        initializeSequenceAndTrack(); // Initial setup
     }
 
-    // Public method to get instance
     public static MidiUtility getInstance() throws MidiUnavailableException, InvalidMidiDataException {
         if (instance == null) {
             instance = new MidiUtility();
@@ -25,10 +21,23 @@ public class MidiUtility {
         return instance;
     }
 
-    // Resets the sequence and track
-    public void resetSequence() throws InvalidMidiDataException {
-        this.sequence = new Sequence(Sequence.PPQ, 4);
-        this.track = sequence.createTrack();
+    // Initializes or reinitializes the sequence and track
+    private void initializeSequenceAndTrack() throws InvalidMidiDataException {
+        if (this.sequence == null) {
+            this.sequence = new Sequence(Sequence.PPQ, 4);
+        } else {
+            // Remove existing tracks from the sequence to start fresh
+            Track[] existingTracks = this.sequence.getTracks();
+            for (Track t : existingTracks) {
+                this.sequence.deleteTrack(t);
+            }
+        }
+        // Create new track
+        this.track = this.sequence.createTrack();
+    }
+
+    public void resetForNewMelody() throws InvalidMidiDataException {
+        initializeSequenceAndTrack(); // Prepare for new melody
     }
     
     public void addNote(int channel, int note, int velocity, int startTick, int duration, int instrument)
