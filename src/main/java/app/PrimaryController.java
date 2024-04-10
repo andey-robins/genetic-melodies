@@ -76,15 +76,12 @@ public class PrimaryController {
         //   3. Provide output to user, ask if they want to continue evolution
         //   4. Go to step 2 if they want to continue otherwise exit
 
-        Individual[] smoothest = pop.getTopPerformers(10);
-        System.out.println("Evolution complete. Playing smoothest melody.");
-        smoothest[1].playMelody();
-        drawStaffAndNotes(smoothest[0].getMelody());
+        
         Individual[] smoothest = pop.getTopPerformers(1);
         System.out.println("Top Melody");
         System.out.println(smoothest[0].getFitness());
         smoothest[0].playMelody();
-
+        drawStaffAndNotes(smoothest[0].getMelody());
         // Cleanup
         // Destroy Sequencer
         // Doesn't work right now, it doesn't wait for the current melody to end. Might not need it tbh
