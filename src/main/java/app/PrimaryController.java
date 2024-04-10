@@ -2,8 +2,12 @@ package app;
 
 import genetics.crossover.UniformCrossover;
 import genetics.fitness.ConsonanceFitness;
+import genetics.fitness.MultipleFitness;
+import genetics.fitness.VarietyFitness;
+import genetics.interfaces.IFitnessFunction;
 import genetics.mutation.NotewiseMutation;
 import genetics.selection.TournamentSelection;
+import genetics.stopping.BoundedGenerationStop;
 import genetics.stopping.FitnessThresholdStop;
 import midi.MidiRecorderGUI;
 import genetics.Individual;
@@ -17,6 +21,7 @@ import org.apache.commons.lang3.math.NumberUtils;
 
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiUnavailableException;
+import java.util.ArrayList;
 
 public class PrimaryController {
 
@@ -30,6 +35,10 @@ public class PrimaryController {
     private TextField generationsBetweenInteractionField;
     @FXML
     private CheckBox elitismCheckBox;
+    @FXML
+    private CheckBox consonanceCheckBox;
+    @FXML
+    private CheckBox varietyCheckBox;
     @FXML
     private Button startGAButton;
 
@@ -45,16 +54,24 @@ public class PrimaryController {
 //        int generationsBetweenInteraction = Integer.parseInt(generationsForInteractionField.getText());
         boolean elitism = this.elitismCheckBox.isSelected();
 
+        ArrayList<IFitnessFunction> fitnesses = new ArrayList<>();
+        if (this.consonanceCheckBox.isSelected()) {
+            fitnesses.add(new ConsonanceFitness());
+        }
+        if (this.varietyCheckBox.isSelected()) {
+            fitnesses.add(new VarietyFitness());
+        }
+
         /* Here you should have access to creating a population with the available mechanisms */
         Population pop = new Population(
                 populationCount,
                 elitism,
                 0.2,
-                new ConsonanceFitness(),
+                new MultipleFitness(fitnesses),
                 new TournamentSelection(5),
                 new UniformCrossover(),
                 new NotewiseMutation(),
-                new FitnessThresholdStop(1.0)
+                new BoundedGenerationStop(numberOfGenerations)
         );
         // Then evolution is just this:
          pop.Evolve();
