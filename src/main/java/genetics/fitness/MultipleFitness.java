@@ -14,7 +14,9 @@ public class MultipleFitness implements IFitnessFunction {
     @Override
     public double score(Individual i) {
         double compositeScore = 0.0;
-
+        if (fitnesses.isEmpty()){
+            fitnesses.add(new SmoothFitness());
+        }
         for (IFitnessFunction fitness : this.fitnesses) {
             compositeScore += fitness.score(i);
         }
