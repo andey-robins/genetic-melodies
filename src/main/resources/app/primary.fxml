@@ -31,7 +31,14 @@
 
         <Label text="Elitism:" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
         <CheckBox fx:id="elitismCheckBox" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+
+        <Label text="Consonance:" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
+        <CheckBox fx:id="consonanceCheckBox" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+
+        <Label text="Variety:" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
+        <CheckBox fx:id="varietyCheckBox" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
     </GridPane>
-    <Canvas fx:id="staffCanvas" width="380" height="200"/>
     <Button text="Start GA" onAction="#startGA"/>
+    <Canvas fx:id="staffCanvas" width="380" height="200"/>
+    
 </VBox>

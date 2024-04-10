@@ -123,39 +123,33 @@ public class PrimaryController {
         // Clear previous drawings
         gc.clearRect(0, 0, staffCanvas.getWidth(), staffCanvas.getHeight());
     
-        // Draw staff lines
-        double lineSpacing = 10; // Adjust as necessary
-        double startY = 50; // Start drawing staff lines a bit lower
+        double lineSpacing = 10;
+        double startY = 50;
         for (int i = 0; i < 5; i++) {
             double y = startY + lineSpacing * i;
             gc.strokeLine(10, y, staffCanvas.getWidth() - 10, y);
         }
     
-        // Use an array to hold noteX so it can be modified inside lambda
         final double[] noteX = {10}; // Starting x position for notes
         double noteSpacing = 20; // Space between notes
         melody.forEach(note -> {
             Optional<Integer> pitchOpt = note.getPitch();
             if (pitchOpt.isPresent()) {
-                // Simplified: convert pitch to a vertical position on the staff
                 double noteY = pitchToPositionOnStaff(pitchOpt.get(), startY, lineSpacing);
     
                 // Draw a simple circle for the note head
-                gc.fillOval(noteX[0], noteY - 5, 10, 10); // Adjust size as needed
+                gc.fillOval(noteX[0], noteY - 5, 10, 10);
             } else {
-                // Draw a rest symbol, here we use a simple "R" to represent rests
-                gc.fillText("R", noteX[0] + 5, startY + 2 * lineSpacing); // You might want to adjust positioning
+                // Draw a rest symbol
+                gc.fillText("R", noteX[0] + 5, startY + 2 * lineSpacing);
             }
             
-            noteX[0] += noteSpacing; // Move to the next position regardless of note or rest
+            noteX[0] += noteSpacing; // Move to the next position
         });
     }
     
     private double pitchToPositionOnStaff(int pitch, double startY, double lineSpacing) {
-        // This method needs to convert MIDI pitch numbers to y positions on the canvas
-        // Placeholder: Implement the conversion based on musical rules
-        // For simplicity, let's map pitches directly to staff positions as a placeholder
-        return startY + pitch + lineSpacing - 50; // Placeholder: replace with actual logic
+        return startY + pitch + lineSpacing - 50;
     }
     
 }

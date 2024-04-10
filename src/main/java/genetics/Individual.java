@@ -75,7 +75,7 @@ public class Individual {
                 }
                 startTick += note.getLength(); // Advance the start tick regardless of whether a note is played or not
             }
-            displayMelody();
+            printMelody();
             midiUtility.play();
         } catch (Exception e) {
             e.printStackTrace();
@@ -87,15 +87,15 @@ public class Individual {
     }
 
     /**
-     * Displays a visual representation of the melody.
+     * Prints out a visual representation of the melody.
      */
-    public void displayMelody() {
+    public void printMelody() {
         StringBuilder melodyRepresentation = new StringBuilder("Melody: [");
         for (Note note : this.melody) {
             melodyRepresentation.append(noteToString(note)).append(", ");
         }
         if (!this.melody.isEmpty()) {
-            melodyRepresentation.setLength(melodyRepresentation.length() - 2); // Trim the trailing comma and space
+            melodyRepresentation.setLength(melodyRepresentation.length() - 2);
         }
         melodyRepresentation.append("]");
         System.out.println(melodyRepresentation.toString());
@@ -109,12 +109,9 @@ public class Individual {
      */
     private String noteToString(Note note) {
         String pitchName = note.getPitch().map(pitch -> {
-            // This map operation converts MIDI pitch numbers back to note names.
-            // Assuming pitch corresponds directly to the Note.Pitch enum ordering.
             return Note.Pitch.values()[pitch % Note.Pitch.values().length - 1].name();
         }).orElse("REST");
-        
-        // The rhythm is directly obtainable from the note's rhythm property.
+
         String rhythmName = note.getRhythm().name();
         return pitchName + " (" + rhythmName + ")";
     }
