@@ -108,10 +108,13 @@ public class Population {
         return this.individuals.get(this.RNG.nextInt(this.individuals.size()));
     }
 
+    public ArrayList<Individual> getIndividuals() { return this.individuals; }
+
     private void initialize() {
         for (int i = 0; i < this.size; i++) {
             this.individuals.add(Individual.randomIndividualFactory());
         }
+        this.evaluateFitness();
     }
 
     private void evaluateFitness() {
