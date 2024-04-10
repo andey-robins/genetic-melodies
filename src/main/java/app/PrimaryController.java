@@ -135,21 +135,35 @@ public class PrimaryController {
         melody.forEach(note -> {
             Optional<Integer> pitchOpt = note.getPitch();
             if (pitchOpt.isPresent()) {
-                double noteY = pitchToPositionOnStaff(pitchOpt.get(), startY, lineSpacing);
-    
-                // Draw a simple circle for the note head
+                int pitch = pitchOpt.get();
+                boolean isSharp = note.isSharp();
+                double noteY = pitchToPositionOnStaff(pitch, startY, lineSpacing);
+        
+                // Adjust noteX[0] if the note is sharp to make room for the sharp symbol
+                if (isSharp) {
+                    gc.fillText("#", noteX[0], noteY); // Draw sharp symbol
+                    noteX[0] += 5; // Adjust for sharp symbol width
+                }
+        
+                // Draw the note
                 gc.fillOval(noteX[0], noteY - 5, 10, 10);
+        
+                if (isSharp) {
+                    noteX[0] -= 5; // Reset adjustment for sharp symbol width
+                }
             } else {
                 // Draw a rest symbol
                 gc.fillText("R", noteX[0] + 5, startY + 2 * lineSpacing);
             }
-            
+        
             noteX[0] += noteSpacing; // Move to the next position
         });
     }
     
     private double pitchToPositionOnStaff(int pitch, double startY, double lineSpacing) {
-        return startY + pitch + lineSpacing - 50;
+        int stepsFromC3 = (pitch - 48);
+        return 100 + startY - (stepsFromC3 * (lineSpacing / 2));
     }
     
+
 }

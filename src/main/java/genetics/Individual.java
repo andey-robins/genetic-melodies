@@ -109,9 +109,14 @@ public class Individual {
      */
     private String noteToString(Note note) {
         String pitchName = note.getPitch().map(pitch -> {
-            return Note.Pitch.values()[pitch % Note.Pitch.values().length - 1].name();
+            int pitchIndex = pitch - 48; // Subtract base MIDI number
+            if (pitchIndex >= 0 && pitchIndex < Note.Pitch.values().length - 1) {
+                return Note.Pitch.values()[pitchIndex].name();
+            } else {
+                return "UNKNOWN PITCH";
+            }
         }).orElse("REST");
-
+    
         String rhythmName = note.getRhythm().name();
         return pitchName + " (" + rhythmName + ")";
     }

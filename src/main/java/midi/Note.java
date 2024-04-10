@@ -82,4 +82,9 @@ public class Note {
     public Rhythm getRhythm() {
         return this.rhythm;
     }
+
+    public boolean isSharp() {
+        int relativePitch = (getPitch().get() - 48) % 12;
+        return relativePitch == 1 || relativePitch == 3 || relativePitch == 6 || relativePitch == 8 || relativePitch == 10;
+    }
 }
