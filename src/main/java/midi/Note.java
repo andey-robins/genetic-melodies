@@ -7,19 +7,26 @@ public class Note {
 
     Pitch pitch;
     Rhythm rhythm;
-
-    private static final Random PRNG = new Random();
+    private static final Random RNG = new Random();
 
     public static Note randomNoteFactory() {
         Pitch[] noteOpts = Pitch.values();
         Rhythm[] rhythmOpts = Rhythm.values();
-        Pitch pitch = noteOpts[PRNG.nextInt(noteOpts.length)];
-        Rhythm rhythm = rhythmOpts[PRNG.nextInt(rhythmOpts.length)];
+        Pitch pitch = noteOpts[RNG.nextInt(noteOpts.length)];
+        Rhythm rhythm = rhythmOpts[RNG.nextInt(rhythmOpts.length)];
         return new Note(pitch, rhythm);
     }
 
     public Note(Pitch p, Rhythm r) {
         this.pitch = p;
+        this.rhythm = r;
+    }
+
+    public void setPitch(Pitch p) {
+        this.pitch = p;
+    }
+
+    public void setRhythm(Rhythm r) {
         this.rhythm = r;
     }
 
@@ -59,7 +66,6 @@ public class Note {
             case B_5  -> Optional.of(71);
             case C_5  -> Optional.of(72);
             case REST -> Optional.empty();
-            default -> Optional.empty();
         };
     }
 
@@ -70,7 +76,6 @@ public class Note {
             case QUARTER -> 4;
             case EIGHTH -> 2;
             case SIXTEENTH -> 1;
-            default -> 0;
         };
     }
 }

@@ -17,7 +17,6 @@ import org.apache.commons.lang3.math.NumberUtils;
 
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiUnavailableException;
-import java.util.function.Consumer;
 
 public class PrimaryController {
 
@@ -68,6 +67,7 @@ public class PrimaryController {
 
         Individual[] smoothest = pop.getTopPerformers(1);
         System.out.println("Top Melody");
+        System.out.println(smoothest[0].getFitness());
         smoothest[0].playMelody();
 
         // Cleanup

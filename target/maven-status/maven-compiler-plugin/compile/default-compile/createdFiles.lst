@@ -11,6 +11,7 @@ genetics/Population.class
 genetics/mutation/NotewiseMutation.class
 genetics/interfaces/ICrossoverMechanism.class
 app/PrimaryController$1Validator.class
+genetics/mutation/PitchMutation.class
 genetics/stopping/FitnessThresholdStop.class
 midi/MidiTest.class
 midi/MidiRecorder$2.class
@@ -25,8 +26,10 @@ app/PrimaryController.class
 genetics/interfaces/IFitnessFunction.class
 midi/Note.class
 genetics/interfaces/ISelectionMechanism.class
+genetics/mutation/RhythmicMutation.class
 midi/Note$Pitch.class
 app/App.class
 midi/MidiRecorder$1.class
 midi/MidiPlayer.class
+genetics/mutation/HalfStepMutation.class
 midi/Note$Rhythm.class
