@@ -18,19 +18,19 @@
             <Insets top="20" right="20" bottom="20" left="20"/>
         </padding>
         <Label text="Population Count:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
-        <TextField fx:id="populationCountFld" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+        <TextField fx:id="populationCountField" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
 
         <Label text="Number of Notes:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-        <TextField fx:id="numberOfNotesFld" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+        <TextField fx:id="numberOfNotesField" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
 
         <Label text="Number of Generations:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-        <TextField fx:id="numberOfGenerationsFld" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+        <TextField fx:id="numberOfGenerationsField" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
 
         <Label text="Generations Between Interaction:" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
-        <TextField fx:id="generationsBetweenInteractionFld" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+        <TextField fx:id="generationsBetweenInteractionField" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
 
         <Label text="Elitism:" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
-        <CheckBox fx:id="elitismCbx" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+        <CheckBox fx:id="elitismCheckBox" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
     </GridPane>
     <Canvas fx:id="staffCanvas" width="380" height="200"/>
     <Button text="Start GA" onAction="#startGA"/>

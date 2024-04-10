@@ -3,6 +3,7 @@ package genetics;
 import genetics.interfaces.*;
 import org.javatuples.Pair;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -108,10 +109,13 @@ public class Population {
         return this.individuals.get(this.RNG.nextInt(this.individuals.size()));
     }
 
+    public ArrayList<Individual> getIndividuals() { return this.individuals; }
+
     private void initialize() {
         for (int i = 0; i < this.size; i++) {
             this.individuals.add(Individual.randomIndividualFactory());
         }
+        this.evaluateFitness();
     }
 
     private void evaluateFitness() {
@@ -122,7 +126,12 @@ public class Population {
     }
 
     private ArrayList<Pair<Individual, Individual>> select() {
-        return this.selector.selectTop(this, 20);
+        ArrayList<Pair<Individual, Individual>> top = this.selector.selectTop(this, 20);
+        // we recalculate true fitness here. This allows any selection function to use the fitness as a working
+        // piece of memory. For instance, fitness proportional selection is able to normalize the fitness values
+        // without worrying about side effects down the chain of methods in the Evolve workflow
+        this.evaluateFitness();
+        return top;
     }
 
     private ArrayList<Individual> combine(ArrayList<Pair<Individual, Individual>> parents) {

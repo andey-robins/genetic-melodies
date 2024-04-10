@@ -1,11 +1,10 @@
 package app;
 
 import genetics.crossover.UniformCrossover;
-import genetics.fitness.SmoothFitness;
 import genetics.fitness.ConsonanceFitness;
 import genetics.mutation.NotewiseMutation;
 import genetics.selection.TournamentSelection;
-import genetics.stopping.BoundedGenerationStop;
+import genetics.stopping.FitnessThresholdStop;
 import midi.MidiRecorderGUI;
 import midi.MidiUtility;
 import midi.Note;
@@ -18,6 +17,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import org.apache.commons.lang3.math.NumberUtils;
 
 import java.util.ArrayList;
 import java.util.Optional;
@@ -46,22 +46,26 @@ public class PrimaryController {
 
     @FXML
     private void startGA() throws MidiUnavailableException, InvalidMidiDataException {
-        //int populationCount = Integer.parseInt(populationCountField.getText());
-        //int numberOfNotes = Integer.parseInt(numberOfNotesField.getText());
-        //int numberOfGenerations = Integer.parseInt(numberOfGenerationsField.getText());
-        //int generationsBetweenInteraction = Integer.parseInt(generationsForInteractionField.getText());
-        //boolean elitism = elitismCheckBox.isSelected();
+
+        interface Validator { String ensureParseableInt(String s); };
+        Validator numberString = (String val) -> (NumberUtils.isParsable(val) ? val : "10");
+
+        int populationCount = Integer.parseInt(numberString.ensureParseableInt(this.populationCountField.getText()));
+        int numberOfNotes = Integer.parseInt(numberString.ensureParseableInt(this.numberOfNotesField.getText()));
+        int numberOfGenerations = Integer.parseInt(numberString.ensureParseableInt(this.numberOfGenerationsField.getText()));
+//        int generationsBetweenInteraction = Integer.parseInt(generationsForInteractionField.getText());
+        boolean elitism = this.elitismCheckBox.isSelected();
 
         /* Here you should have access to creating a population with the available mechanisms */
         Population pop = new Population(
-                100,
-                true,
+                populationCount,
+                elitism,
                 0.2,
                 new ConsonanceFitness(),
                 new TournamentSelection(5),
                 new UniformCrossover(),
                 new NotewiseMutation(),
-                new BoundedGenerationStop(100)
+                new FitnessThresholdStop(1.0)
         );
         // Then evolution is just this:
          pop.Evolve();
@@ -76,6 +80,10 @@ public class PrimaryController {
         System.out.println("Evolution complete. Playing smoothest melody.");
         smoothest[1].playMelody();
         drawStaffAndNotes(smoothest[0].getMelody());
+        Individual[] smoothest = pop.getTopPerformers(1);
+        System.out.println("Top Melody");
+        System.out.println(smoothest[0].getFitness());
+        smoothest[0].playMelody();
 
         // Cleanup
         // Destroy Sequencer
