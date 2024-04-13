@@ -1,44 +1,109 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.geometry.Insets?>
+<?import javafx.geometry.*?>
 <?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.text.Font?>
 
-<VBox alignment="CENTER" spacing="10.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="app.PrimaryController" prefWidth="400">
+<!-- Include external stylesheet for custom styling -->
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
 
-    <padding>
-        <Insets top="20" right="20" bottom="20" left="20"/>
-    </padding>
+<BorderPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="app.PrimaryController" stylesheets="@../css/style.css">
 
-    <Label text="Genetic Melodies Config"/>
+    <!-- Top section -->
+    <top>
+        <VBox alignment="CENTER" spacing="10" styleClass="header">
+            <padding>
+                <Insets top="10" right="20" bottom="10" left="20"/>
+            </padding>
+            <Label text="Genetic Melodies" styleClass="header-label"/>
+        </VBox>
+    </top>
 
-    <GridPane hgap="10" vgap="10">
-        <padding>
-            <Insets top="20" right="20" bottom="20" left="20"/>
-        </padding>
-        <Label text="Population Count:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
-        <TextField fx:id="populationCountField" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+    <!-- Left section -->
+    <left>
+        <VBox alignment="TOP_CENTER" spacing="10" styleClass="control-group">
+            <padding>
+                <Insets top="10" right="5" bottom="10" left="20"/>
+            </padding>
+            <!-- GA Settings -->
+            <TitledPane text="Population Settings" collapsible="false" styleClass="group-title">
+                <GridPane hgap="10" vgap="10" styleClass="grid">
+                    <Label text="Population Count:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                    <TextField fx:id="populationCountField" GridPane.columnIndex="1" GridPane.rowIndex="0"  promptText="100"/>
+                    <Label text="Number of Notes:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                    <TextField fx:id="numberOfNotesField" GridPane.columnIndex="1" GridPane.rowIndex="1"  promptText="10"/>
+                    <Label text="Number of Generations:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+                    <TextField fx:id="numberOfGenerationsField" GridPane.columnIndex="1" GridPane.rowIndex="2"  promptText="100"/>
+                    <Label text="Generations Between Interaction:" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+                    <TextField fx:id="generationsBetweenInteractionField" GridPane.columnIndex="1" GridPane.rowIndex="3" promptText="25"/>
+                    <Label text="Elitism:" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+                    <CheckBox fx:id="elitismCheckBox" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+                    <Label text="Consonance:" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
+                    <CheckBox fx:id="consonanceCheckBox" GridPane.columnIndex="1" GridPane.rowIndex="5" selected="true"/>
+                    <Label text="Variety:" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
+                    <CheckBox fx:id="varietyCheckBox" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
+                </GridPane>
+            </TitledPane>
+                
 
-        <Label text="Number of Notes:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-        <TextField fx:id="numberOfNotesField" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+            <!-- Advanced Settings Panel -->
+            <TitledPane fx:id="advancedSettings" text="Advanced Settings" collapsible="true" animated="true" styleClass="group-title">
+                <VBox>
+                    <Label text="Some Advanced Setting:"/>
+                    <CheckBox fx:id="someAdvancedSettingCheckBox"/>
+                </VBox>
+            </TitledPane>
 
-        <Label text="Number of Generations:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-        <TextField fx:id="numberOfGenerationsField" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+            <VBox alignment="CENTER" spacing="40" styleClass="vbox-container">
+            <HBox alignment="CENTER" spacing="20" styleClass="button-hbox">
+                <padding>
+                    <Insets top="10" right="20" bottom="10" left="20"/>
+                </padding>
+                <Button fx:id="startGAButton" text="Start GA" onAction="#startGA" styleClass="start-button"/>
+            </HBox>
+            <HBox alignment="CENTER" spacing="20" styleClass="button-hbox">
+                <padding>
+                    <Insets top="10" right="20" bottom="10" left="20"/>
+                </padding>
+                <Button text="Credits" onAction="#openCredits" styleClass="credits-button"/>
+            </HBox>
+        </VBox>
 
-        <Label text="Generations Between Interaction:" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
-        <TextField fx:id="generationsBetweenInteractionField" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+        </VBox>
 
-        <Label text="Elitism:" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
-        <CheckBox fx:id="elitismCheckBox" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+    </left>
 
-        <Label text="Consonance:" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
-        <CheckBox fx:id="consonanceCheckBox" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+    <!-- Center section -->
+    <center>
+        <HBox alignment="CENTER" spacing="10" styleClass="list-view-container">
+            <VBox styleClass="list-view-vbox">
+                <ListView fx:id="currentMelodyList" prefWidth="200" prefHeight="800"/>
+            </VBox>
+            <VBox alignment="CENTER" spacing="10">
+                <Button text="Transfer Right" onAction="#moveMelodyRight" styleClass="move-button"/>
+                <Button text="Transfer Left" onAction="#moveMelodyLeft" styleClass="move-button"/>
+            </VBox>
+            <VBox styleClass="list-view-vbox">
+                <ListView fx:id="savedMelodyList" prefWidth="200" prefHeight="800"/>
+            </VBox>
+            <Canvas fx:id="staffCanvas" width="800" height="400" styleClass="music-canvas"/>
+        </HBox>
+    </center>
 
-        <Label text="Variety:" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
-        <CheckBox fx:id="varietyCheckBox" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
-    </GridPane>
-    <Button text="Start GA" onAction="#startGA"/>
-    <Canvas fx:id="staffCanvas" width="380" height="200"/>
-    
-</VBox>
+
+<right>
+        <VBox alignment="TOP_CENTER" spacing="10" styleClass="control-group">
+            
+
+
+        </VBox>
+
+    </right>
+    <!-- Bottom section -->
+    <bottom>
+        
+    </bottom>
+</BorderPane>

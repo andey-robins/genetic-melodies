@@ -5,6 +5,7 @@ module geneticMelodies {
     requires javatuples;
     requires javafx.graphics;
     requires org.apache.commons.lang3;
+    requires javafx.base;
 
     opens app to javafx.fxml;
 

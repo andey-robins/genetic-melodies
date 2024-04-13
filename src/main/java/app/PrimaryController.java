@@ -14,15 +14,29 @@ import midi.MidiUtility;
 import midi.Note;
 import genetics.Individual;
 import genetics.Population;
+import genetics.interfaces.EvolutionStopListener;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TitledPane;
+import javafx.scene.control.ToggleButton;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import javafx.util.Pair;
+import javafx.scene.control.ListCell;
+import javafx.util.Callback;
+
 import org.apache.commons.lang3.math.NumberUtils;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Optional;
 
@@ -30,7 +44,7 @@ import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiUnavailableException;
 import java.util.ArrayList;
 
-public class PrimaryController {
+public class PrimaryController  implements EvolutionStopListener {
 
     @FXML
     private TextField populationCountField;
@@ -53,6 +67,18 @@ public class PrimaryController {
     @FXML
     private Canvas staffCanvas;
 
+    // Advanced Settings
+    @FXML private TitledPane advancedSettings;
+
+    // Melody Columns
+    @FXML
+    private ListView<Pair<String, Individual>> currentMelodyList;
+
+    @FXML
+    private ListView<Pair<String, Individual>> savedMelodyList;
+
+    private Population pop;
+
     @FXML
     private void startGA() throws MidiUnavailableException, InvalidMidiDataException {
 
@@ -73,9 +99,10 @@ public class PrimaryController {
             fitnesses.add(new VarietyFitness());
         }
 
-        /* Here you should have access to creating a population with the available mechanisms */
-        Population pop = new Population(
+        /* Here you should have access to initalizing a population with the available mechanisms */
+        this.pop = new Population(
                 populationCount,
+                numberOfNotes,
                 elitism,
                 0.2,
                 new MultipleFitness(fitnesses),
@@ -84,6 +111,13 @@ public class PrimaryController {
                 new NotewiseMutation(),
                 new BoundedGenerationStop(numberOfGenerations)
         );
+        
+        // Update the start button
+        startGAButton.setStyle("-fx-background-color: red;");
+        startGAButton.setText("Running...");
+
+        // Set the listener so the GUI can be triggered to respond to a stop
+        pop.setEvolutionStopListener(this);
         // Then evolution is just this:
          pop.Evolve();
         // it will continue until the stopping condition is triggered
@@ -106,6 +140,117 @@ public class PrimaryController {
 
     }
 
+    /**
+     * Styling Methods
+     */
+
+     @FXML
+     private void initialize() {
+        advancedSettings.setExpanded(false);
+        customizeMelodyListView(currentMelodyList);
+        customizeMelodyListView(savedMelodyList);
+
+        // Add event handlers to play the selected melody and update staff visual
+        currentMelodyList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                playMelodyAndDrawStaff(newValue.getValue().getMelody()); // Assuming getMelody() method exists in the Individual class
+            }
+        });
+
+        savedMelodyList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                playMelodyAndDrawStaff(newValue.getValue().getMelody()); // Assuming getMelody() method exists in the Individual class
+            }
+        });
+    }
+
+
+     @FXML
+    private void toggleAdvancedSettings() {
+        boolean isExpanded = advancedSettings.isExpanded();
+
+        advancedSettings.setExpanded(!isExpanded);
+    }
+    
+    @FXML
+    private void moveMelodyRight() {
+        if (currentMelodyList != null && savedMelodyList != null) {
+            int selectedIndex = currentMelodyList.getSelectionModel().getSelectedIndex();
+            if (selectedIndex != -1) {
+                ObservableList<Pair<String, Individual>> selectedItems = currentMelodyList.getSelectionModel().getSelectedItems();
+                int insertionIndex = savedMelodyList.getSelectionModel().isEmpty() ? savedMelodyList.getItems().size() : savedMelodyList.getSelectionModel().getSelectedIndex();
+                savedMelodyList.getItems().addAll(insertionIndex, selectedItems);
+                currentMelodyList.getItems().removeAll(selectedItems);
+
+                // Sort the saved melodies by fitness value
+                sortMelodiesByFitness(savedMelodyList);
+            }
+        }
+    }
+
+    @FXML
+    private void moveMelodyLeft() {
+        if (currentMelodyList != null && savedMelodyList != null) {
+            int selectedIndex = savedMelodyList.getSelectionModel().getSelectedIndex();
+            if (selectedIndex != -1) {
+                ObservableList<Pair<String, Individual>> selectedItems = savedMelodyList.getSelectionModel().getSelectedItems();
+                int insertionIndex = currentMelodyList.getSelectionModel().isEmpty() ? currentMelodyList.getItems().size() : currentMelodyList.getSelectionModel().getSelectedIndex();
+                currentMelodyList.getItems().addAll(insertionIndex, selectedItems);
+                savedMelodyList.getItems().removeAll(selectedItems);
+
+                // Sort the current melodies by fitness value
+                sortMelodiesByFitness(currentMelodyList);
+            }
+        }
+    }
+
+    private void sortMelodiesByFitness(ListView<Pair<String, Individual>> listView) {
+        ObservableList<Pair<String, Individual>> items = listView.getItems();
+        items.sort((pair1, pair2) -> Double.compare(pair2.getValue().getFitness(), pair1.getValue().getFitness()));
+    }
+
+    
+    @Override
+public void evolutionStopped() {
+    ObservableList<Pair<String, Individual>> melodyItems = FXCollections.observableArrayList();
+
+    ArrayList<Individual> individuals = pop.getIndividuals();
+
+    // Populate the list with melodies
+    for (int i = 0; i < individuals.size(); i++) {
+        Individual individual = individuals.get(i);
+
+        String melodyName = "Melody " + (i + 1);
+
+        melodyItems.add(new Pair<>(melodyName, individual));
+    }
+
+    // Sort the melodies based on fitness value
+    melodyItems.sort((pair1, pair2) -> Double.compare(pair2.getValue().getFitness(), pair1.getValue().getFitness()));
+
+    currentMelodyList.setItems(melodyItems);
+
+    // Update the start button
+    startGAButton.setStyle("-fx-background-color: orange;");
+    startGAButton.setText("Click to Continue...");
+}
+
+
+
+    @FXML
+private void openCredits() {
+    Alert creditsAlert = new Alert(AlertType.INFORMATION);
+    creditsAlert.setTitle("Credits");
+    creditsAlert.setHeaderText("Designed for... TODO");
+    creditsAlert.setContentText("This TODO WAS TODO'D:\n\n"
+        + "- TODO\n"
+        + "- TODO\n"
+        + "- And... TODO\n\n"
+        + "TODO");
+
+    creditsAlert.showAndWait();
+}
+
     @FXML
     private void launchMidiPianoRoll() {
         MidiRecorderGUI midiRecorder = new MidiRecorderGUI();
@@ -117,39 +262,67 @@ public class PrimaryController {
         }
     }
 
+    private void playMelodyAndDrawStaff(ArrayList<Note> melody) {
+        // Play the melody
+        Individual individual = new Individual(melody);
+        individual.playMelody();
+    
+        // Draw the staff visual
+        drawStaffAndNotes(melody);
+    }
+
     public void drawStaffAndNotes(ArrayList<Note> melody) {
         GraphicsContext gc = staffCanvas.getGraphicsContext2D();
     
+        // Clef Images
+        InputStream trebleStream = getClass().getResourceAsStream("/assets/treble.png");
+        Image trebleClef = new Image(trebleStream);
+        InputStream bassStream = getClass().getResourceAsStream("/assets/bass.png");
+        Image bassClef = new Image(bassStream);
+
         // Clear previous drawings
         gc.clearRect(0, 0, staffCanvas.getWidth(), staffCanvas.getHeight());
     
         double lineSpacing = 10;
         double startY = 50;
+        double bassClefStartY = startY + 5.7 * lineSpacing;
+        double clefX = 0;
+        double clefYOffset = 20;
+
+        // Draw treble clef staff lines
         for (int i = 0; i < 5; i++) {
             double y = startY + lineSpacing * i;
-            gc.strokeLine(10, y, staffCanvas.getWidth() - 10, y);
+            gc.strokeLine(35, y, staffCanvas.getWidth() - 10, y);
         }
-    
-        final double[] noteX = {10}; // Starting x position for notes
-        double noteSpacing = 20; // Space between notes
+        gc.drawImage(trebleClef, clefX, startY + clefYOffset - trebleClef.getHeight() / 2);
+
+        // Draw bass clef staff lines
+        for (int i = 0; i < 5; i++) {
+            double y = bassClefStartY + lineSpacing * i;
+            gc.strokeLine(35, y, staffCanvas.getWidth() - 10, y);
+        }
+        gc.drawImage(bassClef, clefX, bassClefStartY + clefYOffset - bassClef.getHeight() / 2);
+
+
+        final double[] noteX = {40}; // Has to be defined this way to be used in the lambda
+        double noteSpacing = 20; // Horizontal space between notes
         melody.forEach(note -> {
             Optional<Integer> pitchOpt = note.getPitch();
             if (pitchOpt.isPresent()) {
                 int pitch = pitchOpt.get();
                 boolean isSharp = note.isSharp();
-                double noteY = pitchToPositionOnStaff(pitch, startY, lineSpacing);
+                double staffStartY = pitch >= 60 ? startY : bassClefStartY;
+                double noteY = pitchToPositionOnStaff(pitch, staffStartY, lineSpacing, pitch >= 60);
         
-                // Adjust noteX[0] if the note is sharp to make room for the sharp symbol
                 if (isSharp) {
-                    gc.fillText("#", noteX[0], noteY); // Draw sharp symbol
-                    noteX[0] += 5; // Adjust for sharp symbol width
+                    gc.fillText("#", noteX[0], noteY);
+                    noteX[0] += 5; // Adjust for sharp
+                    // Draw the note
+                    gc.fillOval(noteX[0], noteY - 5, 10, 10);
+                    noteX[0] -= 5;
                 }
-        
-                // Draw the note
-                gc.fillOval(noteX[0], noteY - 5, 10, 10);
-        
-                if (isSharp) {
-                    noteX[0] -= 5; // Reset adjustment for sharp symbol width
+                else {
+                    gc.fillOval(noteX[0], noteY - 5, 10, 10);
                 }
             } else {
                 // Draw a rest symbol
@@ -160,9 +333,38 @@ public class PrimaryController {
         });
     }
     
-    private double pitchToPositionOnStaff(int pitch, double startY, double lineSpacing) {
-        int stepsFromC3 = (pitch - 48);
-        return 100 + startY - (stepsFromC3 * (lineSpacing / 2));
+    private double pitchToPositionOnStaff(int pitch, double startY, double lineSpacing, boolean isTreble) {
+        double trebleStepsFromC4 = (pitch - 60) * 0.6; // Calculate steps from Middle C
+        double bassStepsFromC4 = (pitch - 60) * 0.45;
+        if (isTreble) {
+            // For treble, move up for higher pitches from Middle C
+            return startY + 5.1 * lineSpacing - (trebleStepsFromC4 * (lineSpacing / 2));
+        } else {
+            // For bass, start below Middle C and move down
+            return startY - 0.27 * lineSpacing - (bassStepsFromC4 * (lineSpacing / 2));
+        }
+    }
+
+
+    // Custom cell factory to customize melodies in list
+    private void customizeMelodyListView(ListView<Pair<String, Individual>> listView) {
+        listView.setCellFactory(new Callback<ListView<Pair<String, Individual>>, ListCell<Pair<String, Individual>>>() {
+            @Override
+            public ListCell<Pair<String, Individual>> call(ListView<Pair<String, Individual>> param) {
+                return new ListCell<Pair<String, Individual>>() {
+                    @Override
+                    protected void updateItem(Pair<String, Individual> item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (empty || item == null) {
+                            setText(null);
+                        } else {
+                            // Set the text of the cell to the melody name and fitness value
+                            setText(item.getKey() + ": (" + String.format("%.2f", item.getValue().getFitness()) + ")");
+                        }
+                    }
+                };
+            }
+        });
     }
     
 

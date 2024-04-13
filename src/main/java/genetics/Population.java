@@ -1,6 +1,10 @@
 package genetics;
 
 import genetics.interfaces.*;
+import midi.Note;
+import midi.Note.Pitch;
+import midi.Note.Rhythm;
+import app.PrimaryController;
 import org.javatuples.Pair;
 
 import java.lang.reflect.Array;
@@ -20,11 +24,13 @@ public class Population {
     ICrossoverMechanism xover;
     IMutationMechanism mutator;
     IStopCondition stopper;
+    EvolutionStopListener stopListener;
 
     private ArrayList<Individual> individuals;
 
     // hyperparams
     private final int size;
+    private final int numNotes;
     private final boolean elitism;
     private final double mutationChance;
 
@@ -41,6 +47,7 @@ public class Population {
      */
     public Population(
             int size,
+            int numNotes,
             boolean elitist,
             double mutChance,
             IFitnessFunction f,
@@ -57,6 +64,7 @@ public class Population {
 
         this.elitism = elitist;
         this.size = size;
+        this.numNotes = numNotes;
         this.mutationChance = mutChance;
 
         this.individuals = new ArrayList<>();
@@ -69,15 +77,24 @@ public class Population {
     public void Evolve() {
         this.initialize();
         System.out.println("Beginning evolution");
+        EvolveLoop();
+    }
+
+    private void EvolveLoop() {
         while (!this.stopper.shouldStop(this)) {
             ArrayList<Pair<Individual, Individual>> survivors;
+ 
+             
+             survivors = this.select();
+             this.individuals = this.combine(survivors);
+             this.mutate();
+             this.generation++;
+             this.evaluateFitness();
+         }
+        // Evolution halted, send a message to the GUI
 
-            
-            survivors = this.select();
-            this.individuals = this.combine(survivors);
-            this.mutate();
-            this.generation++;
-            this.evaluateFitness();
+        if (stopListener != null) {
+            stopListener.evolutionStopped();
         }
     }
 
@@ -113,10 +130,34 @@ public class Population {
 
     private void initialize() {
         for (int i = 0; i < this.size; i++) {
-            this.individuals.add(Individual.randomIndividualFactory());
+            this.individuals.add(Individual.randomIndividualFactory(this.numNotes));
         }
         this.evaluateFitness();
     }
+
+    // Will likely make an option to specify individuals yourself, this could be useful later
+    // private void initialize() {
+    //     for (int i = 0; i < this.size; i++) {
+    //         this.individuals.add(Individual.IndividualFactory(
+    //             new Note(Pitch.C_3, Rhythm.QUARTER),
+    //             new Note(Pitch.D_3, Rhythm.QUARTER),
+    //             new Note(Pitch.E_3, Rhythm.QUARTER),
+    //             new Note(Pitch.F_3, Rhythm.QUARTER),
+    //             new Note(Pitch.G_3, Rhythm.QUARTER),
+    //             new Note(Pitch.A_4, Rhythm.QUARTER),
+    //             new Note(Pitch.B_4, Rhythm.QUARTER),
+    //             new Note(Pitch.C_4, Rhythm.QUARTER),
+    //             new Note(Pitch.D_4, Rhythm.QUARTER),
+    //             new Note(Pitch.E_4, Rhythm.QUARTER),
+    //             new Note(Pitch.F_4, Rhythm.QUARTER),
+    //             new Note(Pitch.G_4, Rhythm.QUARTER),
+    //             new Note(Pitch.A_5, Rhythm.QUARTER),
+    //             new Note(Pitch.B_5, Rhythm.QUARTER),
+    //             new Note(Pitch.C_5, Rhythm.QUARTER)
+    //             ));
+    //     }
+    //     this.evaluateFitness();
+    // }
 
     private void evaluateFitness() {
         for (Individual individual : this.individuals) {
@@ -163,5 +204,9 @@ public class Population {
                 this.mutator.mutate(ind);
             }
         }
+    }
+
+    public void setEvolutionStopListener(EvolutionStopListener listener) {
+        this.stopListener = listener;
     }
 }

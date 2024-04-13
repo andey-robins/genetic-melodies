@@ -13,6 +13,6 @@ public class BoundedGenerationStop implements IStopCondition {
 
     @Override
     public boolean shouldStop(Population p) {
-        return p.generation > this.stoppingPoint;
+        return p.generation % this.stoppingPoint == 0;
     }
 }

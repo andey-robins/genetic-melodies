@@ -4,6 +4,7 @@ import midi.MidiUtility;
 import midi.Note;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiEvent;
@@ -22,12 +23,38 @@ public class Individual {
     ArrayList<Note> melody;
     private int length;
 
+    /**
+     * Creates a random Melody with 10 notes.
+     * @return
+     */
     public static Individual randomIndividualFactory() {
         ArrayList<Note> notes = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
             notes.add(Note.randomNoteFactory());
         }
         return new Individual(notes);
+    }
+
+    /**
+     * Creates a random Melody with the specified number of notes.
+     * @param numNotes
+     * @return
+     */
+    public static Individual randomIndividualFactory(int numNotes) {
+        ArrayList<Note> notes = new ArrayList<>();
+        for (int i = 0; i < numNotes; i++) {
+            notes.add(Note.randomNoteFactory());
+        }
+        return new Individual(notes);
+    }
+
+    /**
+     * Creates a Melody with the specified Notes.
+     * @param numNotes
+     * @return
+     */
+    public static Individual IndividualFactory(Note... notes) {
+        return new Individual(new ArrayList<Note>(Arrays.asList(notes)));
     }
 
     private double fitness;

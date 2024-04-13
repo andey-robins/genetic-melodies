@@ -37,6 +37,9 @@ public class MidiUtility {
     }
 
     public void resetForNewMelody() throws InvalidMidiDataException {
+        if (sequencer != null && sequencer.isRunning()) {
+            sequencer.stop();
+        }
         initializeSequenceAndTrack(); // Prepare for new melody
     }
     

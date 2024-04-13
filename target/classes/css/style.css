@@ -1,35 +1,63 @@
-.root {
-    -fx-background-image: url("../assets/background.jpg");
-    -fx-background-size: cover;
+.header {
+    -fx-background-color: #b91515;
 }
 
-.button {
-    -fx-background-color: #444;
-    -fx-text-fill: #fff;
-    -fx-border-color: #fff;
+.header-label {
+    -fx-text-fill: white;
+    -fx-font-size: 16pt;
+}
+
+.control-group {
+    -fx-background-color: #555;
+    -fx-border-color: #666;
     -fx-border-width: 2;
+    -fx-padding: 10;
 }
 
-
-.status-text {
-    -fx-text-fill: #ffffff;
+.group-title {
     -fx-font-weight: bold;
-    -fx-border-color: #fff;
+    -fx-text-fill: rgb(48, 48, 48);
 }
 
-.instrument-text {
-    -fx-text-fill: #ffffff;
-    -fx-padding: 5px;
-    -fx-border-color: white;
-    -fx-border-width: 2px;
+.grid {
+    -fx-background-color: #444;
 }
 
-.white-key {
-    -fx-fill: white;
-    -fx-stroke: black;
-    -fx-stroke-width: 1;
+.canvas-container {
+    -fx-background-color: #ffffff;
+    -fx-padding: 15;
 }
 
-.black-key {
-    -fx-fill: black;
+.music-canvas {
+    -fx-effect: dropshadow(gaussian, black, 5, 0.5, 0, 0);
+}
+
+.start-button {
+    -fx-font-weight: bold;
+    -fx-background-radius: 0;
+    -fx-background-color: #5cb85c;
+    -fx-text-fill: white;
+    -fx-min-width: 200px;
+    -fx-min-height: 80px;
+    -fx-pref-width: 150px;
+    -fx-pref-height: 50px;
+}
+
+.credits-button {
+    -fx-font-weight: bold;
+    -fx-background-radius: 0;
+    -fx-background-color: #5cb85c;
+    -fx-text-fill: white;
+    -fx-min-width: 100px;
+    -fx-min-height: 40px;
+    -fx-pref-width: 150px;
+    -fx-pref-height: 50px;
+}
+
+.list-view-vbox {
+    -fx-padding: 10px;
+}
+
+.button-hbox {
+    -fx-background-color: #0c0c0c;
 }
