@@ -1,11 +1,20 @@
 package app;
 
+import genetics.crossover.MeasureCrossover;
+import genetics.crossover.OnePointCrossover;
+import genetics.crossover.TwoPointCrossover;
 import genetics.crossover.UniformCrossover;
 import genetics.fitness.ConsonanceFitness;
 import genetics.fitness.MultipleFitness;
 import genetics.fitness.VarietyFitness;
 import genetics.interfaces.IFitnessFunction;
+import genetics.interfaces.IMutationMechanism;
+import genetics.interfaces.ISelectionMechanism;
+import genetics.mutation.MultipleMutation;
 import genetics.mutation.NotewiseMutation;
+import genetics.mutation.PitchMutation;
+import genetics.mutation.RhythmicMutation;
+import genetics.selection.FitnessProportionalSelection;
 import genetics.selection.TournamentSelection;
 import genetics.stopping.BoundedGenerationStop;
 import genetics.stopping.FitnessThresholdStop;
@@ -15,6 +24,7 @@ import midi.Note;
 import genetics.Individual;
 import genetics.Population;
 import genetics.interfaces.EvolutionStopListener;
+import genetics.interfaces.ICrossoverMechanism;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -24,6 +34,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
@@ -46,6 +57,7 @@ import java.util.ArrayList;
 
 public class PrimaryController  implements EvolutionStopListener {
 
+    // Population Settings
     @FXML
     private TextField populationCountField;
     @FXML
@@ -56,10 +68,35 @@ public class PrimaryController  implements EvolutionStopListener {
     private TextField generationsBetweenInteractionField;
     @FXML
     private CheckBox elitismCheckBox;
+
+    // Fitness Settings
     @FXML
     private CheckBox consonanceCheckBox;
     @FXML
     private CheckBox varietyCheckBox;
+    @FXML
+    private CheckBox smoothCheckBox;
+
+    // Crossover Settings
+    @FXML
+    private ComboBox<String> crossoverMethodComboBox;
+
+    // Mutation Settings
+    @FXML
+    private CheckBox pitchMutationCheckBox;
+    @FXML
+    private CheckBox rhythmicMutationCheckBox;
+    @FXML
+    private CheckBox notewiseMutationCheckBox;
+    @FXML
+    private TextField mutationRateField;
+    
+    // Selection Settings
+    @FXML
+    private ComboBox<String> selectionMethodComboBox;
+    @FXML
+    private TextField tournamentSizeTextField;
+    
     @FXML
     private Button startGAButton;
 
@@ -78,6 +115,10 @@ public class PrimaryController  implements EvolutionStopListener {
     private ListView<Pair<String, Individual>> savedMelodyList;
 
     private Population pop;
+    private ArrayList<IFitnessFunction> selectedFitness;
+    private ICrossoverMechanism selectedXover;
+    private ISelectionMechanism selectedSelection;
+    private IMutationMechanism selectedMutation;
 
     @FXML
     private void startGA() throws MidiUnavailableException, InvalidMidiDataException {
@@ -85,30 +126,27 @@ public class PrimaryController  implements EvolutionStopListener {
         interface Validator { String ensureParseableInt(String s); };
         Validator numberString = (String val) -> (NumberUtils.isParsable(val) ? val : "10");
 
-        int populationCount = Integer.parseInt(numberString.ensureParseableInt(this.populationCountField.getText()));
-        int numberOfNotes = Integer.parseInt(numberString.ensureParseableInt(this.numberOfNotesField.getText()));
-        int numberOfGenerations = Integer.parseInt(numberString.ensureParseableInt(this.numberOfGenerationsField.getText()));
-//        int generationsBetweenInteraction = Integer.parseInt(generationsForInteractionField.getText());
+        int populationCount = parseTextFieldOrDefault(populationCountField, 100);
+        int numberOfNotes = parseTextFieldOrDefault(numberOfNotesField, 10);
+        int numberOfGenerations = parseTextFieldOrDefault(numberOfGenerationsField, 100);
+        int generationsBetweenInteraction = parseTextFieldOrDefault(generationsBetweenInteractionField, 25);
+        double mutationRate = parseTextFieldOrDefaultDouble(mutationRateField, 0.2);
         boolean elitism = this.elitismCheckBox.isSelected();
 
-        ArrayList<IFitnessFunction> fitnesses = new ArrayList<>();
-        if (this.consonanceCheckBox.isSelected()) {
-            fitnesses.add(new ConsonanceFitness());
-        }
-        if (this.varietyCheckBox.isSelected()) {
-            fitnesses.add(new VarietyFitness());
-        }
+
+        selectMutationMethod();
+        
 
         /* Here you should have access to initalizing a population with the available mechanisms */
         this.pop = new Population(
                 populationCount,
                 numberOfNotes,
                 elitism,
-                0.2,
-                new MultipleFitness(fitnesses),
-                new TournamentSelection(5),
-                new UniformCrossover(),
-                new NotewiseMutation(),
+                mutationRate,
+                new MultipleFitness(selectedFitness),
+                selectedSelection,
+                selectedXover,
+                selectedMutation,
                 new BoundedGenerationStop(numberOfGenerations)
         );
         
@@ -150,6 +188,7 @@ public class PrimaryController  implements EvolutionStopListener {
         customizeMelodyListView(currentMelodyList);
         customizeMelodyListView(savedMelodyList);
 
+        selectedFitness = new ArrayList<>();
         // Add event handlers to play the selected melody and update staff visual
         currentMelodyList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
@@ -162,6 +201,101 @@ public class PrimaryController  implements EvolutionStopListener {
                 playMelodyAndDrawStaff(newValue.getValue().getMelody()); // Assuming getMelody() method exists in the Individual class
             }
         });
+    }
+
+    private int parseTextFieldOrDefault(TextField textField, int defaultValue) {
+        String text = textField.getText();
+        if (text.isEmpty()) {
+            return defaultValue;
+        } else {
+            return Integer.parseInt(text);
+        }
+    }
+
+    private double parseTextFieldOrDefaultDouble(TextField textField, double defaultValue) {
+        String text = textField.getText();
+        if (text.isEmpty()) {
+            return defaultValue;
+        } else {
+            return Double.parseDouble(text);
+        }
+    }
+    @FXML
+    private void selectFitnessMethod() {
+        if (this.consonanceCheckBox.isSelected()) {
+            selectedFitness.add(new ConsonanceFitness());
+        }
+        if (this.varietyCheckBox.isSelected()) {
+            selectedFitness.add(new VarietyFitness());
+        }
+        if (this.smoothCheckBox.isSelected()) {
+            selectedFitness.add(new VarietyFitness());
+        }
+    }
+
+    @FXML
+    private void selectCrossoverMethod() {
+        String selectedCrossoverMethod = crossoverMethodComboBox.getValue();
+        switch (selectedCrossoverMethod) {
+            case "One Point Crossover":
+            selectedXover = new OnePointCrossover();
+                break;
+            case "Two Point Crossover":
+            selectedXover = new TwoPointCrossover();
+                break;
+            case "Uniform Crossover":
+            selectedXover = new UniformCrossover();
+                break;
+            case "Measure Crossover":
+            selectedXover = new MeasureCrossover();
+                break;
+            default:
+            selectedXover = new OnePointCrossover();
+                break;
+        }
+    }
+    
+    @FXML
+    private void selectMutationMethod() {
+        ArrayList<IMutationMechanism> selectedMutations = new ArrayList<>();
+
+        if (pitchMutationCheckBox.isSelected()) {
+            selectedMutations.add(new PitchMutation());
+        }
+        if (rhythmicMutationCheckBox.isSelected()) {
+            selectedMutations.add(new RhythmicMutation());
+        }
+        if (notewiseMutationCheckBox.isSelected()) {
+            selectedMutations.add(new NotewiseMutation());
+        }
+
+        if (!selectedMutations.isEmpty()) {
+            selectedMutation = new MultipleMutation(selectedMutations);
+        } else {
+            selectedMutation = new PitchMutation();
+        }
+    }
+
+    @FXML
+    private void selectSelectionMethod() {
+        String selectedMethod = selectionMethodComboBox.getValue();
+        switch (selectedMethod) {
+            case "Fitness Proportional":
+                selectedSelection = new FitnessProportionalSelection();
+                tournamentSizeTextField.setVisible(false);
+                break;
+            case "Tournament":
+                // Show the input field to input Tournament Size
+                tournamentSizeTextField.setVisible(true);
+                tournamentSizeTextField.setText("5");
+                selectedSelection = new TournamentSelection(5);
+                break;
+            default:
+                selectedSelection = new FitnessProportionalSelection();
+                // Hide the input field by default
+                tournamentSizeTextField.setVisible(false);
+                break;
+        }
     }
 
 

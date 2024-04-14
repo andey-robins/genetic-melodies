@@ -1,4 +1,11 @@
+package genetics.crossover;
 
+import java.util.ArrayList;
+import java.util.Random;
+
+import genetics.Individual;
+import genetics.interfaces.ICrossoverMechanism;
+import midi.Note;
 
 public class MeasureCrossover implements ICrossoverMechanism {
     private static final Random RNG = new Random();
@@ -13,6 +20,7 @@ public class MeasureCrossover implements ICrossoverMechanism {
         // determine bounds since there is no guarantee about melody lengths
         boolean p1Longer = false;
         int shortestIndividual = p1.size();
+        int tail = 0;
         if (p2.size() < shortestIndividual) {
             shortestIndividual = p2.size();
             p1Longer = true;
@@ -22,7 +30,7 @@ public class MeasureCrossover implements ICrossoverMechanism {
         if (shortestIndividual % 4 == 0) {
             fullMeasures = true;
         } else {
-            int tail = shortestIndividual % 4;
+            tail = shortestIndividual % 4;
             shortestIndividual = shortestIndividual - tail;
         }
 

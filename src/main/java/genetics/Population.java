@@ -73,7 +73,6 @@ public class Population {
         this.generation = 0;
     }
 
-
     public void Evolve() {
         this.initialize();
         System.out.println("Beginning evolution");
@@ -91,8 +90,8 @@ public class Population {
              this.generation++;
              this.evaluateFitness();
          }
+         
         // Evolution halted, send a message to the GUI
-
         if (stopListener != null) {
             stopListener.evolutionStopped();
         }

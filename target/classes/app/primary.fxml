@@ -4,11 +4,10 @@
 <?import javafx.geometry.*?>
 <?import javafx.scene.canvas.Canvas?>
 <?import javafx.scene.text.Font?>
-
-<!-- Include external stylesheet for custom styling -->
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.VBox?>
-
+<?import java.lang.String?>
+<?import javafx.collections.*?>
 <BorderPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="app.PrimaryController" stylesheets="@../css/style.css">
 
@@ -28,7 +27,7 @@
             <padding>
                 <Insets top="10" right="5" bottom="10" left="20"/>
             </padding>
-            <!-- GA Settings -->
+            <!-- Population Settings -->
             <TitledPane text="Population Settings" collapsible="false" styleClass="group-title">
                 <GridPane hgap="10" vgap="10" styleClass="grid">
                     <Label text="Population Count:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
@@ -41,15 +40,77 @@
                     <TextField fx:id="generationsBetweenInteractionField" GridPane.columnIndex="1" GridPane.rowIndex="3" promptText="25"/>
                     <Label text="Elitism:" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
                     <CheckBox fx:id="elitismCheckBox" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
-                    <Label text="Consonance:" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
-                    <CheckBox fx:id="consonanceCheckBox" GridPane.columnIndex="1" GridPane.rowIndex="5" selected="true"/>
-                    <Label text="Variety:" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
-                    <CheckBox fx:id="varietyCheckBox" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
                 </GridPane>
             </TitledPane>
-                
 
-            <!-- Advanced Settings Panel -->
+            <!-- Fitness Functions -->
+            <TitledPane text="Fitness Functions" collapsible="false" styleClass="group-title">
+                <GridPane hgap="10" vgap="10" styleClass="grid">
+                    <Label text="Consonance:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                    <CheckBox fx:id="consonanceCheckBox" GridPane.columnIndex="1" GridPane.rowIndex="0" selected="true"/>
+
+                    <Label text="Variety:" GridPane.columnIndex="3" GridPane.rowIndex="0"/>
+                    <CheckBox fx:id="varietyCheckBox" GridPane.columnIndex="4" GridPane.rowIndex="0"/>
+
+                    <Label text="Smooth:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                    <CheckBox fx:id="smoothCheckBox" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                </GridPane>
+            </TitledPane>
+
+
+            <!-- Crossover Methods -->
+            <TitledPane text="Crossover Method" collapsible="false" styleClass="group-title">
+                <GridPane hgap="10" vgap="10" styleClass="grid">
+                    <Label text="Select Crossover Method:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                    <ComboBox fx:id="crossoverMethodComboBox" onAction="#selectCrossoverMethod" GridPane.columnIndex="1" GridPane.rowIndex="0" value="One Point Crossover">
+                        <items>
+                            <FXCollections fx:factory="observableArrayList">
+                                <String fx:value="One Point Crossover"/>
+                                <String fx:value="Two Point Crossover"/>
+                                <String fx:value="Uniform Crossover"/>
+                                <String fx:value="Measure Crossover"/>
+                            </FXCollections>
+                        </items>
+                    </ComboBox>
+                </GridPane>
+            </TitledPane>
+
+            <!-- Selection Methods -->
+            <TitledPane text="Selection Method" collapsible="false" styleClass="group-title">
+                <GridPane hgap="10" vgap="10" styleClass="grid">
+                    <Label text="Select Selection Method:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                    <ComboBox fx:id="selectionMethodComboBox" onAction="#selectSelectionMethod" GridPane.columnIndex="1" GridPane.rowIndex="0" value="Fitness Proportional">
+                        <items>
+                            <FXCollections fx:factory="observableArrayList">
+                                <String fx:value="Fitness Proportional"/>
+                                <String fx:value="Tournament"/>
+                            </FXCollections>
+                        </items>
+                    </ComboBox>
+                    <!-- TextField for Tournament size -->
+                    <TextField fx:id="tournamentSizeTextField" promptText="Tournament Size" GridPane.columnIndex="2" GridPane.rowIndex="0" visible="false"/>
+                </GridPane>
+            </TitledPane>
+
+
+            <!-- Mutation Methods -->
+            <TitledPane text="Mutation Method" collapsible="false" styleClass="group-title">
+                <GridPane hgap="10" vgap="10" styleClass="grid">
+                    <Label text="Pitch Mutation:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                    <CheckBox fx:id="pitchMutationCheckBox" GridPane.columnIndex="1" GridPane.rowIndex="0" selected="true"/>
+                    <Label text="Rhythmic Mutation:" GridPane.columnIndex="2" GridPane.rowIndex="0"/>
+                    <CheckBox fx:id="rhythmicMutationCheckBox" GridPane.columnIndex="3" GridPane.rowIndex="0"/>
+                    <Label text="Notewise Mutation:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                    <CheckBox fx:id="notewiseMutationCheckBox" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                    <Label text="Halfstep Mutation:" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
+                    <CheckBox fx:id="halfstepMutationCheckBox" GridPane.columnIndex="3" GridPane.rowIndex="1"/>
+                    <Label text="Mutation Rate:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+                    <TextField fx:id="mutationRateField" GridPane.columnIndex="1" GridPane.rowIndex="2"  promptText="0.2"/>
+                </GridPane>
+            </TitledPane>
+
+
+            <!-- Advanced Settings -->
             <TitledPane fx:id="advancedSettings" text="Advanced Settings" collapsible="true" animated="true" styleClass="group-title">
                 <VBox>
                     <Label text="Some Advanced Setting:"/>
@@ -58,22 +119,22 @@
             </TitledPane>
 
             <VBox alignment="CENTER" spacing="40" styleClass="vbox-container">
-            <HBox alignment="CENTER" spacing="20" styleClass="button-hbox">
-                <padding>
-                    <Insets top="10" right="20" bottom="10" left="20"/>
-                </padding>
-                <Button fx:id="startGAButton" text="Start GA" onAction="#startGA" styleClass="start-button"/>
-            </HBox>
-            <HBox alignment="CENTER" spacing="20" styleClass="button-hbox">
-                <padding>
-                    <Insets top="10" right="20" bottom="10" left="20"/>
-                </padding>
-                <Button text="Credits" onAction="#openCredits" styleClass="credits-button"/>
-            </HBox>
-        </VBox>
+                <HBox alignment="CENTER" spacing="20" styleClass="button-hbox">
+                    <padding>
+                        <Insets top="10" right="20" bottom="10" left="20"/>
+                    </padding>
+                    <Button fx:id="startGAButton" text="Start GA" onAction="#startGA" styleClass="start-button"/>
+                </HBox>
+                
+                <HBox alignment="CENTER" spacing="20" styleClass="button-hbox">
 
+                    <padding>
+                        <Insets top="75" right="20" bottom="10" left="20"/>
+                    </padding>
+                    <Button text="Credits" onAction="#openCredits" styleClass="credits-button"/>
+                </HBox>
+            </VBox>
         </VBox>
-
     </left>
 
     <!-- Center section -->
