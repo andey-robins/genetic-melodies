@@ -6,6 +6,7 @@ import genetics.crossover.TwoPointCrossover;
 import genetics.crossover.UniformCrossover;
 import genetics.fitness.ConsonanceFitness;
 import genetics.fitness.MultipleFitness;
+import genetics.fitness.SampleSimilarityFitness;
 import genetics.fitness.VarietyFitness;
 import genetics.interfaces.IFitnessFunction;
 import genetics.interfaces.IMutationMechanism;
@@ -17,9 +18,7 @@ import genetics.mutation.RhythmicMutation;
 import genetics.selection.FitnessProportionalSelection;
 import genetics.selection.TournamentSelection;
 import genetics.stopping.BoundedGenerationStop;
-import genetics.stopping.FitnessThresholdStop;
 import midi.MidiRecorderGUI;
-import midi.MidiUtility;
 import midi.Note;
 import genetics.Individual;
 import genetics.Population;
@@ -38,9 +37,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
-import javafx.scene.control.ToggleButton;
 import javafx.scene.image.Image;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 import javafx.scene.control.ListCell;
@@ -51,10 +48,6 @@ import org.apache.commons.lang3.math.NumberUtils;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Optional;
-
-import javax.sound.midi.InvalidMidiDataException;
-import javax.sound.midi.MidiUnavailableException;
-import java.util.ArrayList;
 
 public class PrimaryController implements EvolutionStopListener {
 
@@ -130,7 +123,7 @@ public class PrimaryController implements EvolutionStopListener {
     private long tempoFactor = 1;
 
     @FXML
-    private void startGA() throws MidiUnavailableException, InvalidMidiDataException {
+    private void startGA() {
         interface Validator { String ensureParseableInt(String s); };
         Validator numberString = (String val) -> (NumberUtils.isParsable(val) ? val : "10");
 
@@ -141,8 +134,11 @@ public class PrimaryController implements EvolutionStopListener {
         double mutationRate = parseTextFieldOrDefaultDouble(mutationRateField, 0.2);
         boolean elitism = this.elitismCheckBox.isSelected();
 
-        selectMutationMethod();
+        this.updateActiveFitnessFunctions();
+        this.selectMutationMethod();
         
+        System.out.println(this.selectedFitness);
+
 
         /* Here you should have access to initalizing a population with the available mechanisms */
         this.pop = new Population(
@@ -156,6 +152,8 @@ public class PrimaryController implements EvolutionStopListener {
                 selectedMutation,
                 new BoundedGenerationStop(numberOfGenerations)
         );
+
+        System.out.println("pop");
         
         // Update the start button
         startGAButton.setStyle("-fx-background-color: red;");
@@ -163,8 +161,9 @@ public class PrimaryController implements EvolutionStopListener {
 
         // Set the listener so the GUI can be triggered to respond to a stop
         pop.setEvolutionStopListener(this);
+        System.out.println("listeners setup");
         // Then evolution is just this:
-         pop.Evolve();
+        pop.Evolve();
         // it will continue until the stopping condition is triggered
         // our workflow will thus be able to be:
         //   1. Prompt user for initial configuration
@@ -181,7 +180,6 @@ public class PrimaryController implements EvolutionStopListener {
     /**
      * Styling Methods
      */
-
      @FXML
      private void initialize() {
         advancedSettings.setExpanded(false);
@@ -221,16 +219,26 @@ public class PrimaryController implements EvolutionStopListener {
         }
     }
     @FXML
-    private void selectFitnessMethod() {
-        if (this.consonanceCheckBox.isSelected()) {
-            selectedFitness.add(new ConsonanceFitness());
-        }
-        if (this.varietyCheckBox.isSelected()) {
-            selectedFitness.add(new VarietyFitness());
-        }
-        if (this.smoothCheckBox.isSelected()) {
-            selectedFitness.add(new VarietyFitness());
-        }
+    private void updateActiveFitnessFunctions() {
+         this.selectedFitness = new ArrayList<>();
+
+         if (this.consonanceCheckBox.isSelected()) {
+             this.selectedFitness.add(new ConsonanceFitness());
+         }
+         if (this.varietyCheckBox.isSelected()) {
+             this.selectedFitness.add(new VarietyFitness());
+         }
+         if (this.smoothCheckBox.isSelected()) {
+             this.selectedFitness.add(new VarietyFitness());
+         }
+
+         for (Individual i : this.savedMelodyList
+                                    .getItems()
+                                    .stream()
+                                    .map(Pair::getValue)
+                                    .toList()) {
+            this.selectedFitness.add(new SampleSimilarityFitness(i));
+         }
     }
 
     @FXML

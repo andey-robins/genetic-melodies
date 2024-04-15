@@ -69,8 +69,8 @@ public class Population {
 
         this.individuals = new ArrayList<>();
 
-
         this.generation = 0;
+        System.out.println("Finished constructor");
     }
 
     public void Evolve() {
@@ -85,10 +85,14 @@ public class Population {
  
              
              survivors = this.select();
+             System.out.println("Finished selection");
              this.individuals = this.combine(survivors);
+             System.out.println("Finished combination");
              this.mutate();
+             System.out.println("Finished mutate, re running stopper");
              this.generation++;
              this.evaluateFitness();
+             System.out.println("Finished loop, re running stopper");
          }
          
         // Evolution halted, send a message to the GUI
@@ -131,6 +135,7 @@ public class Population {
         for (int i = 0; i < this.size; i++) {
             this.individuals.add(Individual.randomIndividualFactory(this.numNotes));
         }
+        System.out.println("init");
         this.evaluateFitness();
     }
 

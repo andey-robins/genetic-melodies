@@ -22,12 +22,16 @@ public class JaccardSimilarity {
      * @return J(m1, m2)
      */
     public static double NoteSimilarity(ArrayList<Note> m1, ArrayList<Note> m2) {
-        m1.sort(noteComparator);
-        m2.sort(noteComparator);
+
+        ArrayList<Note> m1c = new ArrayList<>(m1);
+        ArrayList<Note> m2c = new ArrayList<>(m2);
+
+        m1c.sort(noteComparator);
+        m2c.sort(noteComparator);
 
         int intersecting = 0;
 
-        int shortestMelody = Math.min(m1.size(), m2.size());
+        int shortestMelody = Math.min(m1c.size(), m2c.size());
 
         // we use a two pointer approach to traverse the lists and identify elements
         // which are similar at two points
@@ -35,8 +39,8 @@ public class JaccardSimilarity {
         int m2Idx = 0;
 
         while (m1Idx < shortestMelody && m2Idx < shortestMelody) {
-            Note one = m1.get(m1Idx);
-            Note two = m2.get(m2Idx);
+            Note one = m1c.get(m1Idx);
+            Note two = m2c.get(m2Idx);
 
             if (one.getPitch() == two.getPitch()) {
                 if (one.getLength() == two.getLength() && one.getLength() == two.getLength()) {
@@ -58,7 +62,7 @@ public class JaccardSimilarity {
         }
 
 
-        return ((double) intersecting / (m1.size() + m2.size() - (double) intersecting));
+        return ((double) intersecting / (m1c.size() + m2c.size() - (double) intersecting));
     }
 
 
