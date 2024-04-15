@@ -43,7 +43,7 @@ public class MidiUtility {
         initializeSequenceAndTrack(); // Prepare for new melody
     }
     
-    public void addNote(int channel, int note, int velocity, int startTick, int duration, int instrument)
+    public void addNote(int channel, int note, int velocity, int startTick, long duration, int instrument)
             throws InvalidMidiDataException {
         ShortMessage instrumentChange = new ShortMessage();
         instrumentChange.setMessage(ShortMessage.PROGRAM_CHANGE, channel, instrument, 0);

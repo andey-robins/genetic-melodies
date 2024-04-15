@@ -83,14 +83,12 @@ public class Individual {
     /**
      * Plays the melody of this individual.
      */
-    public void playMelody() {
+    public void playMelody(int instrument, long tempoFactor) {
         try {
             // TODO: Replace these hardcoded values
             MidiUtility midiUtility = MidiUtility.getInstance();
-            int startTick = 0;
-            int duration = 2;
+            int currentTick = 0;
             int velocity = 64;
-            int instrument = 0;
             
             // Ensure sequence is empty
             midiUtility.resetForNewMelody();
@@ -98,9 +96,9 @@ public class Individual {
             for (Note note : melody) {
                 Optional<Integer> pitch = note.getPitch();
                 if (pitch.isPresent()) {
-                    midiUtility.addNote(0, pitch.get(), velocity, startTick, note.getLength(), instrument);
+                    midiUtility.addNote(0, pitch.get(), velocity, currentTick, note.getLength() / tempoFactor, instrument);
                 }
-                startTick += note.getLength(); // Advance the start tick regardless of whether a note is played or not
+                currentTick += note.getLength() / tempoFactor; // Advance the current tick regardless of whether a note is played or not
             }
             printMelody();
             midiUtility.play();

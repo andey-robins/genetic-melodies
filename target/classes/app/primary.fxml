@@ -112,10 +112,12 @@
 
             <!-- Advanced Settings -->
             <TitledPane fx:id="advancedSettings" text="Advanced Settings" collapsible="true" animated="true" styleClass="group-title">
-                <VBox>
-                    <Label text="Some Advanced Setting:"/>
-                    <CheckBox fx:id="someAdvancedSettingCheckBox"/>
-                </VBox>
+                <GridPane hgap="10" vgap="10" styleClass="grid">
+                    <Label text="MIDI Instrument ID:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                    <TextField fx:id="instrumentTextField" onKeyTyped="#validateInstrument" GridPane.columnIndex="1" GridPane.rowIndex="0" promptText="0"/>
+                    <Label text="Tempo Factor:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                    <TextField fx:id="tempoFactorTextField" onKeyTyped="#validateTempoFactor" GridPane.columnIndex="1" GridPane.rowIndex="1" promptText="1"/>
+                </GridPane>
             </TitledPane>
 
             <VBox alignment="CENTER" spacing="40" styleClass="vbox-container">

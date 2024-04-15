@@ -40,6 +40,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.image.Image;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 import javafx.scene.control.ListCell;
@@ -55,7 +56,7 @@ import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiUnavailableException;
 import java.util.ArrayList;
 
-public class PrimaryController  implements EvolutionStopListener {
+public class PrimaryController implements EvolutionStopListener {
 
     // Population Settings
     @FXML
@@ -105,7 +106,12 @@ public class PrimaryController  implements EvolutionStopListener {
     private Canvas staffCanvas;
 
     // Advanced Settings
-    @FXML private TitledPane advancedSettings;
+    @FXML 
+    private TitledPane advancedSettings;
+    @FXML
+    private TextField instrumentTextField;
+    @FXML
+    private TextField tempoFactorTextField;
 
     // Melody Columns
     @FXML
@@ -120,9 +126,11 @@ public class PrimaryController  implements EvolutionStopListener {
     private ISelectionMechanism selectedSelection;
     private IMutationMechanism selectedMutation;
 
+    private int instrument = 0;
+    private long tempoFactor = 1;
+
     @FXML
     private void startGA() throws MidiUnavailableException, InvalidMidiDataException {
-
         interface Validator { String ensureParseableInt(String s); };
         Validator numberString = (String val) -> (NumberUtils.isParsable(val) ? val : "10");
 
@@ -132,7 +140,6 @@ public class PrimaryController  implements EvolutionStopListener {
         int generationsBetweenInteraction = parseTextFieldOrDefault(generationsBetweenInteractionField, 25);
         double mutationRate = parseTextFieldOrDefaultDouble(mutationRateField, 0.2);
         boolean elitism = this.elitismCheckBox.isSelected();
-
 
         selectMutationMethod();
         
@@ -169,13 +176,6 @@ public class PrimaryController  implements EvolutionStopListener {
         Individual[] smoothest = pop.getTopPerformers(1);
         System.out.println("Top Melody");
         System.out.println(smoothest[0].getFitness());
-        smoothest[0].playMelody();
-        drawStaffAndNotes(smoothest[0].getMelody());
-        // Cleanup
-        // Destroy Sequencer
-        // Doesn't work right now, it doesn't wait for the current melody to end. Might not need it tbh
-        //MidiUtility.getInstance().cleanup();
-
     }
 
     /**
@@ -299,13 +299,33 @@ public class PrimaryController  implements EvolutionStopListener {
     }
 
 
-     @FXML
+    @FXML
     private void toggleAdvancedSettings() {
         boolean isExpanded = advancedSettings.isExpanded();
 
         advancedSettings.setExpanded(!isExpanded);
     }
-    
+
+    @FXML
+    public void validateInstrument() {
+        String text = instrumentTextField.getText();
+        if (!text.matches("\\d*")) {
+            // Remove non-numeric
+            instrumentTextField.setText(text.replaceAll("[^\\d]", ""));
+        }
+        instrument = Integer.parseInt(text);
+    }
+
+    @FXML
+    public void validateTempoFactor() {
+        String text = tempoFactorTextField.getText();
+        if (!text.matches("\\d*")) {
+            // Remove non-numeric
+            tempoFactorTextField.setText(text.replaceAll("[^\\d]", ""));
+        }
+        tempoFactor = Long.parseLong(text);
+    }
+
     @FXML
     private void moveMelodyRight() {
         if (currentMelodyList != null && savedMelodyList != null) {
@@ -371,7 +391,7 @@ public void evolutionStopped() {
 
 
 
-    @FXML
+@FXML
 private void openCredits() {
     Alert creditsAlert = new Alert(AlertType.INFORMATION);
     creditsAlert.setTitle("Credits");
@@ -399,7 +419,7 @@ private void openCredits() {
     private void playMelodyAndDrawStaff(ArrayList<Note> melody) {
         // Play the melody
         Individual individual = new Individual(melody);
-        individual.playMelody();
+        individual.playMelody(instrument, tempoFactor);
     
         // Draw the staff visual
         drawStaffAndNotes(melody);
