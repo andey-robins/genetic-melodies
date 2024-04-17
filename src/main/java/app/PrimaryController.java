@@ -59,8 +59,6 @@ public class PrimaryController implements EvolutionStopListener {
     @FXML
     private TextField numberOfGenerationsField;
     @FXML
-    private TextField generationsBetweenInteractionField;
-    @FXML
     private CheckBox elitismCheckBox;
 
     // Fitness Settings
@@ -130,14 +128,11 @@ public class PrimaryController implements EvolutionStopListener {
         int populationCount = parseTextFieldOrDefault(populationCountField, 100);
         int numberOfNotes = parseTextFieldOrDefault(numberOfNotesField, 10);
         int numberOfGenerations = parseTextFieldOrDefault(numberOfGenerationsField, 100);
-        int generationsBetweenInteraction = parseTextFieldOrDefault(generationsBetweenInteractionField, 25);
         double mutationRate = parseTextFieldOrDefaultDouble(mutationRateField, 0.2);
         boolean elitism = this.elitismCheckBox.isSelected();
 
         this.updateActiveFitnessFunctions();
         this.selectMutationMethod();
-        
-        System.out.println(this.selectedFitness);
 
 
         /* Here you should have access to initalizing a population with the available mechanisms */
@@ -403,12 +398,12 @@ public void evolutionStopped() {
 private void openCredits() {
     Alert creditsAlert = new Alert(AlertType.INFORMATION);
     creditsAlert.setTitle("Credits");
-    creditsAlert.setHeaderText("Designed for... TODO");
-    creditsAlert.setContentText("This TODO WAS TODO'D:\n\n"
-        + "- TODO\n"
-        + "- TODO\n"
-        + "- And... TODO\n\n"
-        + "TODO");
+    creditsAlert.setHeaderText("Created for Dr. Annie Wu's CAP5512");
+    creditsAlert.setContentText("Developed by:\n\n"
+        + " Jenna Goodrich\n"
+        + " Ahmed Mansour\n"
+        + " Andey Robins\n\n"
+        + "Spring 2024 - University of Central Florida");
 
     creditsAlert.showAndWait();
 }

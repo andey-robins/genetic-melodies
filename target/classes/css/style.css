@@ -79,3 +79,9 @@
 .button-hbox {
     -fx-background-color: #555;
 }
+
+.list-label {
+    -fx-font-weight: bold;
+    -fx-font-size: 14pt;
+    -fx-alignment: center;
+}

@@ -36,10 +36,8 @@
                     <TextField fx:id="numberOfNotesField" GridPane.columnIndex="1" GridPane.rowIndex="1"  promptText="10"/>
                     <Label text="Number of Generations:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
                     <TextField fx:id="numberOfGenerationsField" GridPane.columnIndex="1" GridPane.rowIndex="2"  promptText="100"/>
-                    <Label text="Generations Between Interaction:" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
-                    <TextField fx:id="generationsBetweenInteractionField" GridPane.columnIndex="1" GridPane.rowIndex="3" promptText="25"/>
-                    <Label text="Elitism:" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
-                    <CheckBox fx:id="elitismCheckBox" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+                    <Label text="Elitism:" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+                    <CheckBox fx:id="elitismCheckBox" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
                 </GridPane>
             </TitledPane>
 
@@ -142,20 +140,21 @@
     <!-- Center section -->
     <center>
         <HBox alignment="CENTER" spacing="10" styleClass="list-view-container">
-            <VBox styleClass="list-view-vbox">
+            <VBox styleClass="list-view-vbox" alignment="CENTER">
+                <Label text="Generated Melodies" styleClass="list-label"/>
                 <ListView fx:id="currentMelodyList" prefWidth="200" prefHeight="800"/>
             </VBox>
             <VBox alignment="CENTER" spacing="10">
                 <Button text="Transfer Right" onAction="#moveMelodyRight" styleClass="move-button"/>
                 <Button text="Transfer Left" onAction="#moveMelodyLeft" styleClass="move-button"/>
             </VBox>
-            <VBox styleClass="list-view-vbox">
+            <VBox styleClass="list-view-vbox" alignment="CENTER">
+                <Label text="Saved Melodies" styleClass="list-label"/>
                 <ListView fx:id="savedMelodyList" prefWidth="200" prefHeight="800"/>
             </VBox>
             <Canvas fx:id="staffCanvas" width="800" height="400" styleClass="music-canvas"/>
         </HBox>
     </center>
-
 
 <right>
         <VBox alignment="TOP_CENTER" spacing="10" styleClass="control-group">
